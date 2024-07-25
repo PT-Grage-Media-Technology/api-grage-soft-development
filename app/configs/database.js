@@ -1,8 +1,8 @@
 module.exports = {
-  HOST: "srv596.hstgr.io",
-  USER: "u610515881_ngurusizin",
-  PASSWORD: "NgurusIzin123#",
-  DB: "u610515881_ngurusizin",
+  HOST: "localhost",
+  USER: "root",
+  PASSWORD: "",
+  DB: "gmt_soft_development",
   dialect: "mysql",
   pool: {
     max: 5,
