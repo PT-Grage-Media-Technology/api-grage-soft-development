@@ -1,0 +1,164 @@
+const db = require("../models");
+const Paket = db.paket;
+const KategoriWebsite = db.kategoriwebsite;
+const JSONAPISerializer = require("jsonapi-serializer");
+const serializer = new JSONAPISerializer("paket", {
+  attributes: [
+    "harga",
+    "jumlah_pilihan_desain",
+    "status_website",
+    "kategori_website_id",
+  ],
+  kategori_website: {
+    ref: "id",
+    attributes: ["nama_kategori"],
+  },
+});
+
+// Create and Save a new Paket
+exports.create = async (req, res) => {
+  const paket = {
+    harga: req.body.harga,
+    jumlah_pilihan_desain: req.body.jumlah_pilihan_desain,
+    status_website: req.body.status_website,
+    kategori_website_id: req.body.kategori_website_id,
+  };
+
+  const kategoriWebsite = await KategoriWebsite.findByPk(
+    req.body.kategori_website_id
+  );
+  if (!kategoriWebsite) {
+    return res.status(400).send({
+      message: "Kategori Website tidak ditemukan.",
+    });
+  }
+
+  Paket.create(paket)
+    .then((data) => {
+      res.status(201).send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Terjadi kesalahan saat membuat Paket.",
+      });
+    });
+};
+
+// Retrieve all Pakets from the database
+exports.findAll = (req, res) => {
+  Paket.findAll()
+    .then((data) => {
+      const serializedData = serializer.serialize(data);
+      res.send(serializedData);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Terjadi kesalahan saat mengambil Paket.",
+      });
+    });
+};
+
+// Find a single Paket with an id
+exports.findOne = (req, res) => {
+  const id = req.params.id;
+
+  Paket.findByPk(id)
+    .then((data) => {
+      if (data) {
+        const serializedData = serializer.serialize(data);
+        res.send(serializedData);
+      } else {
+        res.status(404).send({
+          message: `Tidak dapat menemukan Paket dengan id=${id}.`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message ||
+          "Terjadi kesalahan saat mengambil Paket dengan id=" + id,
+      });
+    });
+};
+
+// Update a Paket by the id in the request
+exports.update = async (req, res) => {
+  const id = req.params.id;
+
+  const kategoriWebsite = await KategoriWebsite.findByPk(
+    req.body.kategori_website_id
+  );
+  if (!kategoriWebsite) {
+    return res.status(400).send({
+      message: "Kategori Website tidak ditemukan.",
+    });
+  }
+
+  Paket.update(req.body, {
+    where: { id: id },
+  })
+    .then((num) => {
+      if (num == 1) {
+        return Paket.findByPk(id);
+      } else {
+        res.status(404).send({
+          message: `Tidak dapat memperbarui Paket dengan id=${id}. Mungkin Paket tidak ditemukan atau req.body kosong!`,
+        });
+      }
+    })
+    .then((data) => {
+      if (data) {
+        const serializedData = serializer.serialize(data);
+        res.send(serializedData);
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Terjadi kesalahan saat memperbarui Paket.",
+      });
+    });
+};
+
+// Delete a Paket with the specified id in the request
+exports.delete = (req, res) => {
+  const id = req.params.id;
+
+  Paket.destroy({
+    where: { id: id },
+  })
+    .then((num) => {
+      if (num == 1) {
+        res.send({
+          message: "Paket berhasil dihapus.",
+        });
+      } else {
+        res.status(404).send({
+          message: `Tidak dapat menghapus Paket dengan id=${id}. Mungkin Paket tidak ditemukan!`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Terjadi kesalahan saat menghapus Paket.",
+      });
+    });
+};
+
+// Delete all Pakets from the database
+exports.deleteAll = (req, res) => {
+  Paket.destroy({
+    where: {},
+    truncate: false,
+  })
+    .then((nums) => {
+      res.send({
+        message: `${nums} Paket berhasil dihapus.`,
+      });
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Terjadi kesalahan saat menghapus semua Paket.",
+      });
+    });
+};

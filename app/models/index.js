@@ -28,10 +28,13 @@ db.transaksi = require("./Transaksi.js")(sequelize, Sequelize);
 db.testimoni = require("./Testimoni.js")(sequelize, Sequelize);
 db.administrators = require("./Administrators.js")(sequelize, Sequelize);
 db.order = require("./Order.js")(sequelize, Sequelize);
-
+db.klien = require("./klien.js")(sequelize, Sequelize);
+db.paket = require("./paket.js")(sequelize, Sequelize);
+db.kategoriwebsite = require("./kategoriwebsite.js")(sequelize, Sequelize);
+db.kategori_klien = require("./KategoriKlien.js")(sequelize, Sequelize);
 
 // relasi table order ke layanan
-db.order.belongsTo(db.layanan, { foreignKey: 'layananId' });
+db.order.belongsTo(db.layanan, { foreignKey: "layananId" });
 
 // Sinkronkan model dengan database
 sequelize
