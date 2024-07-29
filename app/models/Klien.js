@@ -26,10 +26,15 @@ module.exports = (sequelize, Sequelize) => {
 
   Klien.associate = (models) => {
     Klien.belongsTo(models.kategori_klien, {
-      foreignKey: "kategoriKlienId",
-      as: "kategoriKlien",
+      foreignKey: "kategori_klien_Id",
+      as: "kategori_klien",
+    });
+    Klien.belongsTo(models.paket, {
+      foreignKey: "paket_Id",
+      as: "paket",
     });
   };
+
 
   return Klien;
 };

@@ -104,12 +104,27 @@ exports.update = async (req, res) => {
     });
   }
 
-  Paket.update(req.body, {
+  const paket = {
+    harga: req.body.harga,
+    jumlah_pilihan_desain: req.body.jumlah_pilihan_desain,
+    status_website: req.body.status_website,
+    kategori_Website_Id: req.body.kategori_website_id,
+  };
+
+  Paket.update(paket, {
     where: { id: id },
   })
     .then((num) => {
       if (num == 1) {
-        return Paket.findByPk(id);
+        return Paket.findByPk(id, {
+          include: [
+            {
+              model: KategoriWebsite,
+              as: "kategoriWebsite",
+              attributes: ["id", "nama_kategori", "deskripsi_kategori"],
+            },
+          ],
+        });
       } else {
         res.status(404).send({
           message: `Tidak dapat memperbarui Paket dengan id=${id}. Mungkin Paket tidak ditemukan atau req.body kosong!`,
