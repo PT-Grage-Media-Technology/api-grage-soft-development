@@ -6,6 +6,10 @@ const JSONAPISerializer = require('jsonapi-serializer').Serializer;
 
 const multer = require('multer');
 
+const fs = require('fs');
+const path = require('path');
+// const Setting = require('../models/Setting'); // Sesuaikan dengan path model Anda
+
 // Create and Save a new Tentang
 exports.create = async (req, res) => {
   try {
@@ -15,23 +19,26 @@ exports.create = async (req, res) => {
       // Simpan atau proses gambar dan dapatkan URL atau path-nya
       const imageName = `${file.filename}`;
       // local
-      // const imageUrl = `${req.protocol}://${req.get('host')}/tentang/${file.filename}`;
+     const imageUrl = `${req.protocol}://${req.get('host')}/setting/${file.filename}`;
       // production
-       const imageUrl = `https://api.ngurusizin.online/tentang/${file.filename}`;
+      //  const imageUrl = `https://api.ngurusizin.online/tentang/${file.filename}`;
     
 
     // Ambil URL gambar pertama jika tersedia
 
     // Buat objek Tentang dengan URL gambar yang telah diproses
+
     const setting = {
-      nama: req.body.nama,
-      setting: req.body.setting,
-      phone: req.body.phone,
-      email: req.body.email,
-      lokasi: req.body.lokasi,
-      gambar: imageName, 
-      urlGambar: imageUrl, 
+      setting_warna: req.body.setting_warna,  
+      wa: req.body.wa,                       
+      telp: req.body.telp,                    
+      email: req.body.email,                 
+      profil_perusahaan: req.body.profil_perusahaan,  
+      alamat: req.body.alamat,               
+      foto: imageName,                        
+      gambar_setting: imageUrl                
     };
+    
 
     // Simpan Tentang ke database menggunakan metode yang sesuai
     // Tangani kesalahan dan skenario keberhasilan sesuai kebutuhan
@@ -44,13 +51,14 @@ exports.create = async (req, res) => {
   }
 }
 
-  const settingSerializer = new JSONAPISerializer('setting', {
-    attributes: ['nama','setting', 'phone', 'lokasi', 'email', 'gambar', 'urlGambar'],
-    keyForAttribute: 'camelCase',
-  });
+const settingSerializer = new JSONAPISerializer('setting', {
+  attributes: ['setting_warna', 'wa', 'telp', 'email', 'profil_perusahaan', 'alamat', 'foto', 'gambar_setting'],
+  keyForAttribute: 'camelCase',
+});
+
   
 
-// Retrieve all Tentangs from the database.
+// Retrieve all Settings from the database.
 exports.findAll = async (req, res) => {
   try {
     // Mendapatkan nilai halaman dan ukuran halaman dari query string (default ke halaman 1 dan ukuran 10 jika tidak disediakan)
@@ -119,63 +127,98 @@ exports.update = async (req, res) => {
 
   try {
     let settingData = req.body;
-    
+  
     // Jika pengguna mengunggah gambar baru, gunakan gambar yang baru diupdate
     if (file) {
       const imageName = file.filename;
-       // local
-      // const imageUrl = `${req.protocol}://${req.get('host')}/tentang/${file.filename}`;
+      // local
+     const imageUrl = `${req.protocol}://${req.get('host')}/tentang/${file.filename}`;
       // production
-      const imageUrl = `https://api.ngurusizin.online/tentang/${file.filename}`;
-    
+     // const imageUrl = `https://api.ngurusizin.online/tentang/${file.filename}`;
+      
       settingData = {
         ...settingData,
-        gambar: imageName,
-        urlGambar: imageUrl,
+        setting_warna: req.body.setting_warna,  
+        wa: req.body.wa,                       
+        telp: req.body.telp,                    
+        email: req.body.email,                 
+        profil_perusahaan: req.body.profil_perusahaan,  
+        alamat: req.body.alamat,               
+        foto: imageName,                        
+        gambar_setting: imageUrl   
       };
     }
-    
+  
     // Temukan tentang yang akan diupdate
     const setting = await Setting.findByPk(id);
     if (!setting) {
-      return res.status(404).send({ message: `tentang with id=${id} not found` });
+      return res.status(404).send({ message: `Setting dengan id=${id} tidak ditemukan` });
     }
-
+  
     // Perbarui data tentang dengan data baru, termasuk data yang tidak berubah
-    await tentang.update(settingData);
-
+    await setting.update(settingData);
+  
     res.send({
-      message: "tentang berhasil diubah."
+      message: "Tentang berhasil diubah."
     });
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
+  
 };
 
 // Delete a Tentang with the specified id in the request
 exports.delete = (req, res) => {
-    const id = req.params.id;
-  
-    Setting.destroy({
-      where: { id: id }
-    })
-      .then(num => {
-        if (num == 1) {
-          res.send({
-            message: "Setting was deleted successfully!"
+  const id = req.params.id;
+
+  // Cari Setting berdasarkan ID
+  Setting.findOne({ where: { id: id } })
+      .then(setting => {
+          if (!setting) {
+              return res.status(404).send({
+                  message: `Tidak dapat menemukan Setting dengan id=${id}.`
+              });
+          }
+
+          // Menghapus file terkait dari direktori
+          const filePath = path.join(__dirname, '../../public/assets/images/setting', setting.foto);
+
+          fs.unlink(filePath, err => {
+              if (err) {
+                  console.error("Tidak dapat menghapus file:", err);
+                  return res.status(500).send({
+                      message: "Tidak dapat menghapus file."
+                  });
+              }
+
+              // Hapus Setting dari database
+              Setting.destroy({
+                  where: { id: id }
+              })
+              .then(num => {
+                  if (num === 1) {
+                      res.send({
+                          message: "Setting berhasil dihapus!"
+                      });
+                  } else {
+                      res.send({
+                          message: `Tidak dapat menghapus Setting dengan id=${id}. Mungkin Setting tidak ditemukan!`
+                      });
+                  }
+              })
+              .catch(err => {
+                  res.status(500).send({
+                      message: "Tidak dapat menghapus Setting dengan id=" + id
+                  });
+              });
           });
-        } else {
-          res.send({
-            message: `Cannot delete Setting with id=${id}. Maybe Tentang was not found!`
-          });
-        }
       })
       .catch(err => {
-        res.status(500).send({
-          message: "Could not delete Setting with id=" + id
-        });
+          res.status(500).send({
+              message: "Error mengambil Setting dengan id=" + id
+          });
       });
-  };
+};
 
 // Delete all Tentangs from the database.
 exports.deleteAll = (req, res) => {
@@ -184,12 +227,12 @@ exports.deleteAll = (req, res) => {
       truncate: false
     })
       .then(nums => {
-        res.send({ message: `${nums} Settings were deleted successfully!` });
+        res.send({ message: `${nums} Settings berhasil dihapus!` });
       })
       .catch(err => {
         res.status(500).send({
           message:
-            err.message || "Some error occurred while removing all Settings."
+            err.message || "Terjadi kesalahan saat menghapus semua Settings."
         });
       });
   };
