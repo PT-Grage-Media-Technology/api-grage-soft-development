@@ -1,6 +1,6 @@
 const db = require("../models");
 
-const Tentang = db.tentang;
+const Setting = db.setting;
 const Op = db.Sequelize.Op;
 const JSONAPISerializer = require('jsonapi-serializer').Serializer;
 
@@ -23,9 +23,9 @@ exports.create = async (req, res) => {
     // Ambil URL gambar pertama jika tersedia
 
     // Buat objek Tentang dengan URL gambar yang telah diproses
-    const tentang = {
+    const setting = {
       nama: req.body.nama,
-      tentang: req.body.tentang,
+      setting: req.body.setting,
       phone: req.body.phone,
       email: req.body.email,
       lokasi: req.body.lokasi,
@@ -37,17 +37,16 @@ exports.create = async (req, res) => {
     // Tangani kesalahan dan skenario keberhasilan sesuai kebutuhan
 
     // Contoh penggunaan Sequelize (ganti dengan ORM Anda):
-    const newTentang = await Tentang.create(tentang);
-    res.status(201).send(newTentang); // Atau respons yang diinginkan
+    const newSetting = await Setting.create(setting);
+    res.status(201).send(newSetting); // Atau respons yang diinginkan
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
 }
 
-  const tentangSerializer = new JSONAPISerializer('tentang', {
-    attributes: ['nama','tentang', 'phone', 'lokasi', 'email', 'gambar', 'urlGambar'],
+  const settingSerializer = new JSONAPISerializer('setting', {
+    attributes: ['nama','setting', 'phone', 'lokasi', 'email', 'gambar', 'urlGambar'],
     keyForAttribute: 'camelCase',
-
   });
   
 
@@ -62,23 +61,23 @@ exports.findAll = async (req, res) => {
     const offset = (page - 1) * pageSize;
 
     // Mengambil data tentang dengan pagination menggunakan Sequelize
-    const tentangs = await Tentang.findAll({
+    const settings = await Setting.findAll({
       limit: pageSize,
       offset: offset
     });
 
     // Menghitung total jumlah tentang
-    const totalCount = await Tentang.count();
+    const totalCount = await Setting.count();
 
     // Menghitung total jumlah halaman berdasarkan ukuran halaman
     const totalPages = Math.ceil(totalCount / pageSize);
 
     // Menggunakan serializer untuk mengubah data menjadi JSON
-    const tentang = tentangSerializer.serialize(tentangs);
+    const setting = settingSerializer.serialize(settings);
 
     // Kirim response dengan data JSON dan informasi pagination
     res.send({
-      data: tentang,
+      data: setting,
       currentPage: page,
       totalPages: totalPages,
       pageSize: pageSize,
@@ -86,7 +85,7 @@ exports.findAll = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).send({ message: 'Error retrieving tentangs.' });
+    res.status(500).send({ message: 'Error retrieving settings.' });
   }
 };
 
@@ -94,10 +93,10 @@ exports.findAll = async (req, res) => {
 exports.findOne = (req, res) => {
     const id = req.params.id;
   
-    Tentang.findByPk(id)
+    Setting.findByPk(id)
     .then(data => {
       if (data) {
-        const serializedData = tentangSerializer.serialize(data);
+        const serializedData = settingSerializer.serialize(data);
         res.send(serializedData);
       } else {
         res.status(404).send({
@@ -119,7 +118,7 @@ exports.update = async (req, res) => {
   const file = req.file;
 
   try {
-    let tentangData = req.body;
+    let settingData = req.body;
     
     // Jika pengguna mengunggah gambar baru, gunakan gambar yang baru diupdate
     if (file) {
@@ -129,21 +128,21 @@ exports.update = async (req, res) => {
       // production
       const imageUrl = `https://api.ngurusizin.online/tentang/${file.filename}`;
     
-      tentangData = {
-        ...tentangData,
+      settingData = {
+        ...settingData,
         gambar: imageName,
         urlGambar: imageUrl,
       };
     }
     
     // Temukan tentang yang akan diupdate
-    const tentang = await Tentang.findByPk(id);
-    if (!tentang) {
+    const setting = await Setting.findByPk(id);
+    if (!setting) {
       return res.status(404).send({ message: `tentang with id=${id} not found` });
     }
 
     // Perbarui data tentang dengan data baru, termasuk data yang tidak berubah
-    await tentang.update(tentangData);
+    await tentang.update(settingData);
 
     res.send({
       message: "tentang berhasil diubah."
@@ -157,40 +156,40 @@ exports.update = async (req, res) => {
 exports.delete = (req, res) => {
     const id = req.params.id;
   
-    Tentang.destroy({
+    Setting.destroy({
       where: { id: id }
     })
       .then(num => {
         if (num == 1) {
           res.send({
-            message: "Tentang was deleted successfully!"
+            message: "Setting was deleted successfully!"
           });
         } else {
           res.send({
-            message: `Cannot delete Tentang with id=${id}. Maybe Tentang was not found!`
+            message: `Cannot delete Setting with id=${id}. Maybe Tentang was not found!`
           });
         }
       })
       .catch(err => {
         res.status(500).send({
-          message: "Could not delete Tentang with id=" + id
+          message: "Could not delete Setting with id=" + id
         });
       });
   };
 
 // Delete all Tentangs from the database.
 exports.deleteAll = (req, res) => {
-    Tentang.destroy({
+    Setting.destroy({
       where: {},
       truncate: false
     })
       .then(nums => {
-        res.send({ message: `${nums} Tentangs were deleted successfully!` });
+        res.send({ message: `${nums} Settings were deleted successfully!` });
       })
       .catch(err => {
         res.status(500).send({
           message:
-            err.message || "Some error occurred while removing all Tentangs."
+            err.message || "Some error occurred while removing all Settings."
         });
       });
   };

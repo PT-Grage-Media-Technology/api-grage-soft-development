@@ -12,7 +12,7 @@ const TYPE_IMAGE = {
 }
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'public/assets/images/tentang'); 
+    cb(null, 'public/assets/images/setting'); 
   },
   filename: (req, file, cb) => {
     // const ext = TYPE_IMAGE[file.mimetype] 
