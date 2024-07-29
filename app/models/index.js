@@ -36,6 +36,13 @@ db.kategori_klien = require("./KategoriKlien.js")(sequelize, Sequelize);
 // relasi table order ke layanan
 db.order.belongsTo(db.layanan, { foreignKey: "layananId" });
 
+// Call associate methods
+Object.keys(db).forEach((modelName) => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
+});
+
 // Sinkronkan model dengan database
 sequelize
   .sync()

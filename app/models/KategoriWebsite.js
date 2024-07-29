@@ -12,5 +12,12 @@ module.exports = (sequelize, Sequelize) => {
     },
   });
 
+  KategoriWebsite.associate = (models) => {
+    KategoriWebsite.hasMany(models.paket, {
+      foreignKey: "kategori_Website_Id",
+      as: "pakets",
+    });
+  };
+
   return KategoriWebsite;
 };

@@ -1,17 +1,18 @@
 const db = require("../models");
 const Paket = db.paket;
 const KategoriWebsite = db.kategoriwebsite;
-const JSONAPISerializer = require("jsonapi-serializer");
+const JSONAPISerializer = require("jsonapi-serializer").Serializer;
 const serializer = new JSONAPISerializer("paket", {
   attributes: [
     "harga",
     "jumlah_pilihan_desain",
     "status_website",
-    "kategori_website_id",
+    "kategori_Website_Id",
+    "kategoriWebsite",
   ],
-  kategori_website: {
+  kategoriWebsite: {
     ref: "id",
-    attributes: ["nama_kategori"],
+    attributes: ["nama_kategori", "deskripsi_kategori"],
   },
 });
 
@@ -21,7 +22,7 @@ exports.create = async (req, res) => {
     harga: req.body.harga,
     jumlah_pilihan_desain: req.body.jumlah_pilihan_desain,
     status_website: req.body.status_website,
-    kategori_website_id: req.body.kategori_website_id,
+    kategori_Website_Id: req.body.kategori_website_id,
   };
 
   const kategoriWebsite = await KategoriWebsite.findByPk(
@@ -46,7 +47,15 @@ exports.create = async (req, res) => {
 
 // Retrieve all Pakets from the database
 exports.findAll = (req, res) => {
-  Paket.findAll()
+  Paket.findAll({
+    include: [
+      {
+        model: KategoriWebsite,
+        as: "kategoriWebsite",
+        attributes: ["id", "nama_kategori", "deskripsi_kategori"],
+      },
+    ],
+  })
     .then((data) => {
       const serializedData = serializer.serialize(data);
       res.send(serializedData);

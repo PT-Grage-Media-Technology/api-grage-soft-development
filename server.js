@@ -44,6 +44,8 @@ require("./app/routes/auth")(app);
 require("./app/routes/order")(app);
 require("./app/routes/kategoriKlien")(app);
 require("./app/routes/klien")(app);
+require("./app/routes/kategoriWebsite")(app);
+require("./app/routes/paket")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 5000;

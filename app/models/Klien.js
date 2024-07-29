@@ -25,13 +25,9 @@ module.exports = (sequelize, Sequelize) => {
   });
 
   Klien.associate = (models) => {
-    Klien.belongsTo(models.Paket, {
-      foreignKey: "paket_Id",
-      as: "paket",
-    });
-    Klien.belongsTo(models.KategoriKlien, {
-      foreignKey: "kategori_klien_Id",
-      as: "KategoriKlien",
+    Klien.belongsTo(models.kategori_klien, {
+      foreignKey: "kategoriKlienId",
+      as: "kategoriKlien",
     });
   };
 
