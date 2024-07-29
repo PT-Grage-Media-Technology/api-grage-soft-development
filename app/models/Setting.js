@@ -1,30 +1,30 @@
 module.exports = (sequelize, Sequelize) => {
-    const Tentang = sequelize.define("tentang", {
-      nama: {
+    const Setting = sequelize.define("setting", {
+      setting_warna: {
         type: Sequelize.STRING
       },
-      tentang: {
+      wa: {
         type: Sequelize.STRING
       },
-      phone: {
-        type: Sequelize.INTEGER(15)
-      },
-      lokasi: {
+      telp: {
         type: Sequelize.STRING
       },
       email: {
         type: Sequelize.STRING
       },
-      maps: {
+      profil_perusahaan: {
+        type: Sequelize.TEXT
+      },
+      alamat: {
+        type: Sequelize.TEXT
+      },
+      foto: {
         type: Sequelize.STRING
       },
-      gambar: {
+      gambar_setting: {
         type: Sequelize.STRING
       },
-      urlGambar: {
-        type: Sequelize.STRING
-      }
     });
   
-    return Tentang;
+    return Setting;
   };
