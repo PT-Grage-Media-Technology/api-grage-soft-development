@@ -1,5 +1,6 @@
 const db = require("../models");
 const Bank = db.bank;
+const JSONAPISerializer = require("jsonapi-serializer").Serializer;
 const serializer = new JSONAPISerializer("bank", {
   attributes: [
     "nama_bank",
