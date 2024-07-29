@@ -2,9 +2,9 @@ const db = require("../models");
 const Keterangan = db.keterangan;
 const JSONAPISerializer = require("jsonapi-serializer").Serializer;
 const serializer = new JSONAPISerializer("keterangan", {
-    attributes: ["isi"],
-  });
-    
+  attributes: ["isi"],
+});
+
 exports.create = async (req, res) => {
   try {
     const keterangan = {
