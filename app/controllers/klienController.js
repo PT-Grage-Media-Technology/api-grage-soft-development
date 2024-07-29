@@ -75,7 +75,12 @@ const serializer = new JSONAPISerializer("klien", {
 
 exports.findAll = async (req, res) => {
   try {
-    const klien = await Klien.findAll();
+    const klien = await Klien.findAll({
+      include: [
+        { model: Kategori_klien, as: 'kategori_klien' },
+        { model: Paket, as: 'paket' }
+      ]
+    });
     const serializedData = serializer.serialize(klien);
 
     res.status(200).send({
@@ -91,7 +96,12 @@ exports.findAll = async (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  Klien.findByPk(id)
+  Klien.findByPk(id, {
+    include: [
+      { model: Kategori_klien, as: 'kategori_klien' },
+      { model: Paket, as: 'paket' }
+    ]
+  })
     .then((klien) => {
       if (klien) {
         const serializedData = serializer.serialize(klien);
@@ -116,7 +126,7 @@ exports.update = async (req, res) => {
   const id = req.params.id;
   try {
     const file = req.file;
-    const kategoriKlien = await KategoriKlien.findByPk(req.body.kategoriId);
+    const kategoriKlien = await Kategori_klien.findByPk(req.body.kategoriId);
     const paket = await Paket.findByPk(req.body.paketId);
 
     // Process uploaded files:
