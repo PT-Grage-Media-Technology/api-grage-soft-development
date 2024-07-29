@@ -18,9 +18,9 @@ db.sequelize
     console.log("Failed to sync db: " + err.message);
   });
 
-  const corsOptions = {
-    origin: ["https://ngurusizin.online", "http://localhost:3000"],
-  };
+const corsOptions = {
+  origin: ["https://ngurusizin.online", "http://localhost:3000"],
+};
 
 app.use(cors(corsOptions));
 
@@ -42,6 +42,8 @@ require("./app/routes/testimoni")(app);
 require("./app/routes/administrators")(app);
 require("./app/routes/auth")(app);
 require("./app/routes/order")(app);
+require("./app/routes/kategoriKlien")(app);
+require("./app/routes/klien")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 5000;
