@@ -6,6 +6,8 @@ app.use("/layanan", express.static("public/assets/images/layanan")); //masukkan 
 app.use("/transaksi", express.static("public/assets/images/transaksi")); //masukkan public direktori
 app.use("/setting", express.static("public/assets/images/setting")); //masukkan public direktori
 app.use("/testimoni", express.static("public/assets/images/testimoni")); //masukkan public direktori
+app.use("/bank", express.static("public/assets/images/bank")); //masukkan public direktori
+app.use("/klien", express.static("public/assets/images/klien")); //masukkan public direktori
 app.use(cors());
 
 const db = require("./app/models");
