@@ -5,6 +5,10 @@ module.exports = (app) => {
 
   router.post("/", klienMiddleware.single("logo_klien"), klien.create);
   router.get("/", klien.findAll);
+  router.get("/:id", klien.findOne);
+  router.put("/:id", klienMiddleware.single("logo_klien"), klien.update);
+  router.delete("/:id", klien.delete);
+  router.delete("/", klien.deleteAll);
 
   app.use("/api/klien", router);
 };
