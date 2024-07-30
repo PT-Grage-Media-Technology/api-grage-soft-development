@@ -2,6 +2,10 @@ const Sequelize = require("../configs/database");
 
 module.exports = (sequelize, Sequelize) => {
   const Paket = sequelize.define("paket", {
+    nama_paket: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
     harga: {
       type: Sequelize.STRING,
       allowNull: false,

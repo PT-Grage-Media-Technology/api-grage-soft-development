@@ -4,6 +4,7 @@ const KategoriWebsite = db.kategoriwebsite;
 const JSONAPISerializer = require("jsonapi-serializer").Serializer;
 const serializer = new JSONAPISerializer("paket", {
   attributes: [
+    'nama_paket',
     "harga",
     "jumlah_pilihan_desain",
     "status_website",
@@ -19,6 +20,7 @@ const serializer = new JSONAPISerializer("paket", {
 // Create and Save a new Paket
 exports.create = async (req, res) => {
   const paket = {
+    nama_paket: req.body.nama_paket,
     harga: req.body.harga,
     jumlah_pilihan_desain: req.body.jumlah_pilihan_desain,
     status_website: req.body.status_website,
@@ -114,6 +116,7 @@ exports.update = async (req, res) => {
   }
 
   const paket = {
+    nama_paket: req.body.nama_paket,
     harga: req.body.harga,
     jumlah_pilihan_desain: req.body.jumlah_pilihan_desain,
     status_website: req.body.status_website,
