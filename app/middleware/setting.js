@@ -20,6 +20,6 @@ const storage = multer.diskStorage({
   },
 });
 
-const tentang = multer({ storage: storage });
+const setting = multer({ storage: storage });
 
-module.exports = tentang;
+module.exports = setting;

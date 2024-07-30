@@ -3,92 +3,74 @@ const db = require("../models");
 const Testimoni = db.testimoni;
 const Op = db.Sequelize.Op;
 const JSONAPISerializer = require('jsonapi-serializer').Serializer;
-
 const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
 
 // Create and Save a new testimoni
 exports.create = async (req, res) => {
   try {
     const file = req.file;
 
-    // Process uploaded files:
-    // Simpan atau proses gambar dan dapatkan URL atau path-nya
+    // Process uploaded files
     const imageName = `${file.filename}`;
 
-    // local
-    // const imageUrl = `${req.protocol}://${req.get('host')}/testimoni/${file.filename}`;
-    // production
-    const imageUrl = `https://api.ngurusizin.online/testimoni/${file.filename}`;
+    // Production URL
+    const imageUrl = `${req.protocol}://${req.get("host")}/testimoni/${
+        file.filename
+      }`;
 
-
-    // Ambil URL gambar pertama jika tersedia
-    // hah
-    // Buat objek testimoni dengan URL gambar yang telah diproses
+    // Create testimoni object with new attributes
     const testimoni = {
-      nama: req.body.nama,
-      gambar: imageName,
-      urlGambar: imageUrl,
-      testimoni: req.body.testimoni,
-      jabatan: req.body.jabatan,
+      jenis_testimoni: req.body.jenis_testimoni,
+      gambar_testimoni: imageName,
+      judul_testimoni: req.body.judul_testimoni,
+      deskripsi_testimoni: req.body.deskripsi_testimoni,
     };
 
-    // Simpan testimoni ke database menggunakan metode yang sesuai
-    // Tangani kesalahan dan skenario keberhasilan sesuai kebutuhan
-
-    // Contoh penggunaan Sequelize (ganti dengan ORM Anda):
-    const newtestimoni = await Testimoni.create(testimoni);
-    res.status(201).send(newtestimoni); // Atau respons yang diinginkan
+    // Save testimoni to the database
+    const newTestimoni = await Testimoni.create(testimoni);
+    res.status(201).send(newTestimoni);
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
-}
+};
 
 // serialize
 const testimoniSerializer = new JSONAPISerializer('testimoni', {
-  attributes: ['nama', 'gambar', 'urlGambar', 'testimoni', 'jabatan'],
+  attributes: ['jenis_testimoni', 'gambar_testimoni', 'judul_testimoni', 'deskripsi_testimoni'],
   keyForAttribute: 'camelCase',
-
 });
 
 // Retrieve all testimonis from the database.
 exports.findAll = async (req, res) => {
   try {
-    // Mendapatkan nilai halaman dan ukuran halaman dari query string (default ke halaman 1 dan ukuran 10 jika tidak disediakan)
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
-
-    // Menghitung offset berdasarkan halaman dan ukuran halaman
     const offset = (page - 1) * pageSize;
 
-    // Mengambil data testimoni dengan pagination menggunakan Sequelize
     const testimonis = await Testimoni.findAll({
       limit: pageSize,
-      offset: offset
+      offset: offset,
     });
 
-    // Menghitung total jumlah testimoni
     const totalCount = await Testimoni.count();
-
-    // Menghitung total jumlah halaman berdasarkan ukuran halaman
     const totalPages = Math.ceil(totalCount / pageSize);
 
-    // Menggunakan serializer untuk mengubah data menjadi JSON
-    const testimoni = testimoniSerializer.serialize(testimonis);
+    const serializedTestimoni = testimoniSerializer.serialize(testimonis);
 
-    // Kirim response dengan data JSON dan informasi pagination
     res.send({
-      data: testimoni,
+      data: serializedTestimoni,
       currentPage: page,
       totalPages: totalPages,
       pageSize: pageSize,
-      totalCount: totalCount
+      totalCount: totalCount,
     });
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: 'Error retrieving testimonis.' });
   }
 };
-
 
 // Find a single testimoni with an id
 exports.findOne = (req, res) => {
@@ -112,7 +94,7 @@ exports.findOne = (req, res) => {
       });
     });
 };
-// Update a testimoni by the id in the request
+
 // Update a testimoni by the id in the request
 exports.update = async (req, res) => {
   const id = req.params.id;
@@ -121,51 +103,68 @@ exports.update = async (req, res) => {
   try {
     let testimoniData = req.body;
 
-    // Jika pengguna mengunggah gambar baru, gunakan gambar yang baru diupdate
+    const testimoni = await Testimoni.findByPk(id);
+    if (!testimoni) {
+      return res.status(404).send({ message: `Testimoni dengan id=${id} tidak ditemukan` });
+    }
+
+    // Jika ada file baru, hapus file lama
     if (file) {
       const imageName = file.filename;
-      // local
-      // const imageUrl = `${req.protocol}://${req.get('host')}/testimoni/${file.filename}`;
-      // production
-      const imageUrl = `https://api.ngurusizin.online/testimoni/${file.filename}`;
+      const imageUrl = `${req.protocol}://${req.get("host")}/testimoni/${imageName}`;
 
       testimoniData = {
         ...testimoniData,
-        gambar: imageName,
-        urlGambar: imageUrl,
+        gambar_testimoni: imageName,
+        deskripsi_testimoni: imageUrl,
       };
+
+      // Hapus file lama dari server
+      const oldImagePath = `public/assets/images/testimoni/${testimoni.gambar_testimoni}`;
+      fs.unlink(oldImagePath, (err) => {
+        if (err && err.code !== 'ENOENT') { // ENOENT berarti file tidak ditemukan
+          console.error('Gagal menghapus gambar lama:', err);
+        }
+      });
     }
 
-    // Temukan testimoni yang akan diupdate
-    const testimoni = await Testimoni.findByPk(id);
-    if (!testimoni) {
-      return res.status(404).send({ message: `testimoni with id=${id} not found` });
-    }
-
-    // Perbarui data testimoni dengan data baru, termasuk data yang tidak berubah
     await testimoni.update(testimoniData);
-
     res.send({
-      message: "testimoni berhasil diubah."
+      message: "Testimoni berhasil diubah."
     });
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
 };
 
-
-
 // Delete a testimoni with the specified id in the request
 exports.delete = (req, res) => {
   const id = req.params.id;
 
-  Testimoni.destroy({
-    where: { id: id }
-  })
+  Testimoni.findByPk(id)
+    .then(testimoni => {
+      if (!testimoni) {
+        return res.status(404).send({
+          message: `Testimoni with id=${id} not found!`
+        });
+      }
+
+      // Hapus file gambar dari server
+      const oldImagePath = `public/assets/images/testimoni/${testimoni.gambar_testimoni}`;
+      fs.unlink(oldImagePath, (err) => {
+        if (err && err.code !== 'ENOENT') { // ENOENT berarti file tidak ditemukan
+          console.error('Failed to delete image at path:', imagePath, err);
+        }
+      });
+
+      return Testimoni.destroy({
+        where: { id: id }
+      });
+    })
     .then(num => {
       if (num == 1) {
         res.send({
-          message: "testimoni was deleted successfully!"
+          message: "Testimoni was deleted successfully!"
         });
       } else {
         res.send({
@@ -174,11 +173,13 @@ exports.delete = (req, res) => {
       }
     })
     .catch(err => {
+      console.error('Error deleting testimoni:', err); // Log error details
       res.status(500).send({
         message: "Could not delete testimoni with id=" + id
       });
     });
 };
+
 
 // Delete all testimonis from the database.
 exports.deleteAll = (req, res) => {
@@ -196,6 +197,7 @@ exports.deleteAll = (req, res) => {
       });
     });
 };
+
 
 // Find all filter testimonis (phone)
 // exports.findAllPublished = (req, res) => {

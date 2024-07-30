@@ -16,7 +16,7 @@ module.exports = app => {
     router.get("/:id", testimoni.findOne);
   
     // Update a Tutorial with id
-    router.put("/:id", upl_testimoni.single('gambar'), testimoni.update);
+    router.patch("/:id", upl_testimoni.single('gambar'), testimoni.update);
   
     // Delete a Tutorial with id
     router.delete("/:id", testimoni.delete);

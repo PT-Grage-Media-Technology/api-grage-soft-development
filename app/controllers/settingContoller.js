@@ -123,48 +123,46 @@ exports.findOne = (req, res) => {
 // Update a Tentang by the id in the request
 exports.update = async (req, res) => {
   const id = req.params.id;
-  const file = req.file;
-
   try {
-    let settingData = req.body;
-  
-    // Jika pengguna mengunggah gambar baru, gunakan gambar yang baru diupdate
-    if (file) {
-      const imageName = file.filename;
-      // local
-     const imageUrl = `${req.protocol}://${req.get('host')}/tentang/${file.filename}`;
-      // production
-     // const imageUrl = `https://api.ngurusizin.online/tentang/${file.filename}`;
-      
-      settingData = {
-        ...settingData,
-        setting_warna: req.body.setting_warna,  
-        wa: req.body.wa,                       
-        telp: req.body.telp,                    
-        email: req.body.email,                 
-        profil_perusahaan: req.body.profil_perusahaan,  
-        alamat: req.body.alamat,               
-        foto: imageName,                        
-        gambar_setting: imageUrl   
-      };
-    }
-  
-    // Temukan tentang yang akan diupdate
     const setting = await Setting.findByPk(id);
+    
     if (!setting) {
-      return res.status(404).send({ message: `Setting dengan id=${id} tidak ditemukan` });
+      return res
+        .status(404)
+        .send({ message: `Setting dengan id=${id} tidak ditemukan.` });
     }
-  
-    // Perbarui data tentang dengan data baru, termasuk data yang tidak berubah
-    await setting.update(settingData);
-  
-    res.send({
-      message: "Tentang berhasil diubah."
-    });
+
+    const file = req.file;
+    let imageName = setting.foto;
+    let imageUrl = setting.gambar_setting;
+
+    if (file) {
+      // Hapus foto lama
+      const oldImagePath = `public/assets/images/setting/${setting.foto}`;
+      fs.unlink(oldImagePath, (err) => {
+        if (err) {
+          console.error("Gagal menghapus foto lama:", err);
+        }
+      });
+
+      // Set foto baru
+      imageName = `${file.filename}`;
+      imageUrl = `${req.protocol}://${req.get("host")}/setting/${
+        file.filename
+      }`;
+    }
+
+    const updatedSetting = {
+      ...req.body,
+      foto: imageName,
+      gambar_setting: imageUrl,
+    };
+
+    await Setting.update(updatedSetting, { where: { id: id } });
+    res.send({ message: "Setting berhasil diperbarui." });
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
-  
 };
 
 // Delete a Tentang with the specified id in the request
