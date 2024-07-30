@@ -83,6 +83,7 @@ const serializer = new JSONAPISerializer("klien", {
   },
 });
 
+
 exports.findAll = async (req, res) => {
   try {
     const klien = await Klien.findAll({
@@ -91,10 +92,11 @@ exports.findAll = async (req, res) => {
         { model: Paket, as: "paket" },
       ],
     });
-    const serializedData = serializer.serialize(klien);
+
+    // const serializedData = serializer.serialize(klien);
 
     res.status(200).send({
-      data: serializedData,
+      data: klien,
     });
   } catch (error) {
     res.status(500).send({
