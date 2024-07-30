@@ -1,10 +1,11 @@
 const db = require("../models");
 const Bank = db.bank;
+const fs = require("fs");
 const JSONAPISerializer = require("jsonapi-serializer").Serializer;
 const serializer = new JSONAPISerializer("bank", {
   attributes: [
-    "nama_bank",
-    "no_rekening",
+    "nama_rek",
+    "no_rek",
     "image_bank",
     "url_image_bank",
     "atas_nama",
@@ -15,7 +16,8 @@ exports.create = [
   async (req, res) => {
     try {
       const image_bank = req.file;
-      if (image_bank) {
+      // Perbaikan kondisi pengecekan
+      if (!image_bank) {
         return res
           .status(400)
           .send({ message: "Image Bank tidak boleh kosong" });
@@ -26,8 +28,8 @@ exports.create = [
       }`;
 
       const bank = {
-        nama_bank: req.body.nama_bank,
-        no_rekening: req.body.no_rekening,
+        nama_rek: req.body.nama_rek,
+        no_rek: req.body.no_rek,
         atas_nama: req.body.atas_nama,
         image_bank: imageName,
         url_image_bank: imageUrl,
@@ -72,8 +74,8 @@ exports.update = async (req, res) => {
     }
 
     const updatedBank = {
-      nama_bank: req.body.nama_bank,
-      no_rekening: req.body.no_rekening,
+      nama_rek: req.body.nama_rek,
+      no_rek: req.body.no_rek,
       atas_nama: req.body.atas_nama,
       image_bank: imageName,
       url_image_bank: imageUrl,

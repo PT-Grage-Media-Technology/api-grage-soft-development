@@ -4,6 +4,7 @@ module.exports = (app) => {
 
   router.get("/", wcu.findAll);
   router.get("/:id", wcu.findOne);
+  router.post("/", wcu.create);
   router.patch("/:id", wcu.update);
   router.delete("/:id", wcu.delete);
   router.delete("/", wcu.deleteAll);

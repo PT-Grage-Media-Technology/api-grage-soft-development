@@ -3,6 +3,7 @@ module.exports = (app) => {
     const router = require("express").Router();
 
     router.get("/", keterangan.findAll);
+    router.post("/", keterangan.create);
     router.get("/:id", keterangan.findOne);
     router.patch("/:id", keterangan.update);
     router.delete("/:id", keterangan.delete);
