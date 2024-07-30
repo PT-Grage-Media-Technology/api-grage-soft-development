@@ -51,6 +51,7 @@ require("./app/routes/paket")(app);
 require("./app/routes/bank")(app);
 require("./app/routes/keterangan")(app);
 require("./app/routes/wcu")(app);
+require("./app/routes/benefitPaket")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 5000;

@@ -72,6 +72,15 @@ exports.findOne = (req, res) => {
   const id = req.params.id;
 
   Paket.findByPk(id)
+  Paket.findAll({
+    include: [
+      {
+        model: KategoriWebsite,
+        as: "kategoriWebsite",
+        attributes: ["id", "nama_kategori", "deskripsi_kategori"],
+      },
+    ],
+  })
     .then((data) => {
       if (data) {
         const serializedData = serializer.serialize(data);
