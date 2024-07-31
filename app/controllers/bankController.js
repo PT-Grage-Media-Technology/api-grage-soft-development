@@ -91,7 +91,7 @@ exports.update = async (req, res) => {
 exports.findAll = (req, res) => {
   Bank.findAll()
     .then((data) => {
-      res.status(200).send(serializer.serialize(data));
+      res.status(200).send({data: data});
     })
     .catch((error) => {
       res.status(500).send({ message: error.message });
@@ -103,7 +103,7 @@ exports.findOne = (req, res) => {
   Bank.findByPk(id)
     .then((data) => {
       if (data) {
-        res.status(200).send(serializer.serialize(data));
+        res.status(200).send(data);
       } else {
         res
           .status(404)
