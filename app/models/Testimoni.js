@@ -6,6 +6,9 @@ module.exports = (sequelize, Sequelize) => {
     gambar_testimoni: {
       type: Sequelize.STRING, // URL atau path gambar
     },
+    url_gambar: {
+      type: Sequelize.STRING, // URL atau path gambar
+    },
     judul_testimoni: {
       type: Sequelize.STRING, // Judul testimoni
     },
