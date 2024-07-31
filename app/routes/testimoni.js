@@ -4,7 +4,7 @@ module.exports = app => {
   const testimoni = require('../controllers/testimoniController');
   const upl_testimoni = require('../middleware/testimnoni');
   // Route for image upload
-  router.post('/', upl_testimoni.single('gambar'), testimoni.create);
+  router.post('/', upl_testimoni.single('gambar_testimoni'), testimoni.create);
   
     // Retrieve all Tutorials
     router.get("/", testimoni.findAll);
@@ -16,7 +16,7 @@ module.exports = app => {
     router.get("/:id", testimoni.findOne);
   
     // Update a Tutorial with id
-    router.patch("/:id", upl_testimoni.single('gambar'), testimoni.update);
+    router.patch("/:id", upl_testimoni.single('gambar_testimoni'), testimoni.update);
   
     // Delete a Tutorial with id
     router.delete("/:id", testimoni.delete);
