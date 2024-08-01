@@ -115,7 +115,7 @@ exports.update = async (req, res) => {
       testimoniData = {
         ...testimoniData,
         gambar_testimoni: imageName,
-        deskripsi_testimoni: imageUrl,
+        url_gambar: imageUrl,
       };
 
       // Hapus file lama dari server
