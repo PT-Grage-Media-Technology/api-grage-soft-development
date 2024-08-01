@@ -5,7 +5,7 @@ module.exports = (app) => {
   router.post("/", paket.create);
   router.get("/", paket.findAll);
   router.get("/:id", paket.findOne);
-  router.patch("/:id", paket.update);
+  router.put("/:id", paket.update);
   router.delete("/:id", paket.delete);
   app.use("/api/paket", router);
 };
