@@ -86,10 +86,10 @@ exports.findAll = async (req, res) => {
     const benefitPaket = await BenefitPaket.findAll({
       include: [{ model: Paket, as: "paket" }],
     });
-    const serializedData = serializer.serialize(benefitPaket);
+    // const serializedData = serializer.serialize(benefitPaket);
 
     res.status(200).send({
-      data: serializedData,
+      data: benefitPaket
     });
   } catch (error) {
     res.status(500).send({
