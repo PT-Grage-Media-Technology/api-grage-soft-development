@@ -5,7 +5,7 @@ module.exports = (app) => {
   router.post("/", benefitPaket.create);
   router.get("/", benefitPaket.findAll);
   router.get("/:id", benefitPaket.findOne);
-  router.patch("/:id", benefitPaket.update);
+  router.put("/:id", benefitPaket.update);
   router.delete("/:id", benefitPaket.delete);
   router.delete("/", benefitPaket.deleteAll);
 
