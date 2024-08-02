@@ -53,8 +53,6 @@ exports.findAll = (req, res) => {
           const totalPages = Math.ceil(totalCount / pageSize);
           res.send({
             data: testimonis,
-            totalPages: totalPages,
-            currentPage: page,
           });
         })
         .catch((error) => {
