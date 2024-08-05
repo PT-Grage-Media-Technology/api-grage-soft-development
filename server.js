@@ -53,6 +53,7 @@ require("./app/routes/keterangan")(app);
 require("./app/routes/wcu")(app);
 require("./app/routes/benefitPaket")(app);
 require("./app/routes/contohDesain")(app);
+require("./app/routes/syaratketentuan")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 5000;

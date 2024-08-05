@@ -37,6 +37,7 @@ db.wcu = require("./Wcu.js")(sequelize, Sequelize);
 db.bank = require("./Bank.js")(sequelize, Sequelize);
 db.benefitPaket = require("./benefitPaket.js")(sequelize, Sequelize);
 db.contohDesain = require("./contohDesain.js")(sequelize, Sequelize);
+db.syaratKetentuan = require("./SyaratKetentuan.js")(sequelize, Sequelize);
 
 // relasi table order ke layanan
 db.order.belongsTo(db.layanan, { foreignKey: "layananId" });
