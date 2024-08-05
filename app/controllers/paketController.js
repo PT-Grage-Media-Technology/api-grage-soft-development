@@ -59,7 +59,6 @@ exports.findAll = (req, res) => {
     ],
   })
     .then((data) => {
-      const serializedData = serializer.serialize(data);
       res.status(200).send({
         data: data,
       });
