@@ -81,26 +81,41 @@ exports.update = (req, res) => {
 };
 
 // Delete a KategoriWebsite with the specified id in the request
-exports.delete = (req, res) => {
+exports.delete = async (req, res) => {
   const id = req.params.id;
 
-  KategoriWebsite.destroy({
-    where: { id: id },
-  })
-    .then((deleted) => {
-      if (deleted) {
-        res.send({ message: "KategoriWebsite was deleted successfully!" });
-      } else {
-        res
-          .status(404)
-          .send({
-            message: `Cannot delete KategoriWebsite with id=${id}. Maybe KategoriWebsite was not found!`,
-          });
-      }
-    })
-    .catch((error) => {
-      res.status(500).send({ message: error.message });
+  try {
+    // Hapus semua Klien yang terkait dengan Paket yang terkait dengan KategoriWebsite
+    const pakets = await db.paket.findAll({
+      where: { kategori_Website_Id: id },
     });
+
+    for (const paket of pakets) {
+      await db.klien.destroy({
+        where: { paket_Id: paket.id },
+      });
+    }
+
+    // Hapus semua Paket yang terkait dengan KategoriWebsite
+    await db.paket.destroy({
+      where: { kategori_Website_Id: id },
+    });
+
+    // Hapus KategoriWebsite
+    const deleted = await KategoriWebsite.destroy({
+      where: { id: id },
+    });
+
+    if (deleted) {
+      res.send({ message: "KategoriWebsite was deleted successfully!" });
+    } else {
+      res.status(404).send({
+        message: `Cannot delete KategoriWebsite with id=${id}. Maybe KategoriWebsite was not found!`,
+      });
+    }
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
 };
 
 // Delete all KategoriWebsites from the database
