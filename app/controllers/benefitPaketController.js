@@ -89,7 +89,7 @@ exports.findAll = async (req, res) => {
     // const serializedData = serializer.serialize(benefitPaket);
 
     res.status(200).send({
-      data: benefitPaket
+      data: benefitPaket,
     });
   } catch (error) {
     res.status(500).send({
@@ -107,9 +107,8 @@ exports.findOne = async (req, res) => {
     });
 
     if (benefitPaket) {
-      const serializedData = serializer.serialize(benefitPaket);
       res.status(200).send({
-        data: serializedData,
+        data: benefitPaket,
       });
     } else {
       res.status(404).send({
