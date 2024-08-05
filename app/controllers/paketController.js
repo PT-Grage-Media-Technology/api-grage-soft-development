@@ -75,7 +75,7 @@ exports.findOne = (req, res) => {
   const id = req.params.id;
 
   Paket.findByPk(id)
-  Paket.findAll({
+  Paket.findOne({
     include: [
       {
         model: KategoriWebsite,

@@ -62,11 +62,9 @@ exports.update = (req, res) => {
       if (updated) {
         return KategoriWebsite.findByPk(id);
       } else {
-        res
-          .status(404)
-          .send({
-            message: `Cannot update KategoriWebsite with id=${id}. Maybe KategoriWebsite was not found or req.body is empty!`,
-          });
+        res.status(404).send({
+          message: `Cannot update KategoriWebsite with id=${id}. Maybe KategoriWebsite was not found or req.body is empty!`,
+        });
       }
     })
     .then((updatedKategoriWebsite) => {
@@ -129,11 +127,9 @@ exports.deleteAll = async (req, res) => {
     if (deleted) {
       res.send({ message: "All KategoriWebsites were deleted successfully!" });
     } else {
-      res
-        .status(404)
-        .send({
-          message: `Cannot delete KategoriWebsites. Maybe KategoriWebsites were not found!`,
-        });
+      res.status(404).send({
+        message: `Cannot delete KategoriWebsites. Maybe KategoriWebsites were not found!`,
+      });
     }
   } catch (error) {
     res.status(500).send({ message: error.message });
