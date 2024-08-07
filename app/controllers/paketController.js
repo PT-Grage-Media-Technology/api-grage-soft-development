@@ -68,14 +68,15 @@ exports.findAll = (req, res) => {
         message: err.message || "Terjadi kesalahan saat mengambil Paket.",
       });
     });
-};
+  };
+  
+  // Find a single Paket with an id
+  exports.findOne = (req, res) => {
+    const id = req.params.id;
 
-// Find a single Paket with an id
-exports.findOne = (req, res) => {
-  const id = req.params.id;
-
-  Paket.findByPk(id)
+  // Paket.findByPk(id)
   Paket.findOne({
+    where: { id: id },
     include: [
       {
         model: KategoriWebsite,
@@ -86,8 +87,7 @@ exports.findOne = (req, res) => {
   })
     .then((data) => {
       if (data) {
-        const serializedData = serializer.serialize(data);
-        res.send(serializedData);
+        res.send(data);
       } else {
         res.status(404).send({
           message: `Tidak dapat menemukan Paket dengan id=${id}.`,
