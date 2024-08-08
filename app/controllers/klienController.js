@@ -11,7 +11,7 @@ const path = require("path");
 exports.create = [
   async (req, res) => {
     try {
-      const { kategori_klien_Id, paket_Id, nama_klien, is_headline } = req.body;
+      const { kategori_klien_Id, paket_Id, nama_klien, is_headline, url_klien } = req.body;
       const kategoriKlien = await Kategori_klien.findByPk(kategori_klien_Id);
       const paket = await Paket.findByPk(paket_Id);
 
@@ -24,18 +24,17 @@ exports.create = [
       }
 
       const imageName = `${foto.filename}`;
-      const imageUrl = `${req.protocol}://${req.get("host")}/klien/${
-        foto.filename
-      }`;
+      const imageUrl = `${req.protocol}://${req.get("host")}/klien/${foto.filename
+        }`;
 
       if (!kategoriKlien) {
-        return res.status(404).send({
+        return res.status(500).send({
           message: "Kategori tidak ditemukan.",
         });
       }
 
       if (!paket) {
-        return res.status(404).send({
+        return res.status(500).send({
           message: "Paket tidak ditemukan.",
         });
       }
@@ -44,20 +43,20 @@ exports.create = [
         kategori_klien_Id: kategoriKlien.id,
         paket_Id: paket.id,
         nama_klien: nama_klien,
-        logo_klien: imageName,
-        url_klien: imageUrl,
+        logo_klien: imageUrl,
+        url_klien,
         is_headline,
       };
 
       const data = await Klien.create(klien);
-      res.send(data);
+      res.status(201).send(data);
     } catch (err) {
       res.status(500).send({
         message: err.message || "Terjadi kesalahan saat membuat Klien.",
       });
     }
   },
-];
+]; 
 
 const serializer = new JSONAPISerializer("klien", {
   attributes: [
@@ -137,34 +136,54 @@ exports.findOne = (req, res) => {
 
 exports.update = async (req, res) => {
   const id = req.params.id;
+
   try {
     const file = req.file;
     const kategoriKlien = await Kategori_klien.findByPk(req.body.kategoriId);
     const paket = await Paket.findByPk(req.body.paketId);
+    const klien = await Klien.findByPk(id);
 
-    const imageName = `${file.filename}`;
-    const imageUrl = `${req.protocol}://${req.get("host")}/klien/${
-      file.filename
-    }`;
+    let imageUrl;
+    
+    if (file) {
+      const baseUrl = "http://localhost:5000/klien/";
+      const logoFilename = klien.logo_klien.replace(baseUrl, '');
+
+      const imagePath = path.join(
+        __dirname,
+        "../../public/assets/images/klien",
+        logoFilename
+      );
+
+      fs.unlink(imagePath, (err) => {
+        if (err) {
+          console.error("Gagal menghapus file gambar:", err);
+        }
+      });
+
+      imageUrl = `${req.protocol}://${req.get("host")}/klien/${file.filename}`;
+    } else {
+      imageUrl = klien.logo_klien;
+    }
 
     if (!kategoriKlien) {
-      return res.status(404).send({
+      return res.status(500).send({
         message: "Kategori tidak ditemukan.",
       });
     }
 
     if (!paket) {
-      return res.status(404).send({
+      return res.status(500).send({
         message: "Paket tidak ditemukan.",
       });
     }
 
     const updatedKlien = {
-      kategoriId: kategoriKlien.id,
-      paketId: paket.id,
+      kategori_klien_Id: kategoriKlien.id,
+      paket_Id: paket.id,
       nama_klien: req.body.nama_klien,
-      foto: imageName,
-      url: imageUrl,
+      logo_klien: imageUrl,
+      url_klien: req.body.url_klien,
       is_headline: req.body.is_headline,
     };
 
@@ -172,12 +191,13 @@ exports.update = async (req, res) => {
       where: { id: id },
     });
 
+
     if (num == 1) {
-      res.send({
+      res.status(200).send({
         message: "Klien berhasil diperbarui.",
       });
     } else {
-      res.status(404).send({
+      res.status(500).send({
         message: `Tidak dapat memperbarui Klien dengan id=${id}. Mungkin Klien tidak ditemukan atau req.body kosong!`,
       });
     }
@@ -203,10 +223,13 @@ exports.delete = async (req, res) => {
     });
 
     if (num == 1) {
+      const baseUrl = "http://localhost:5000/klien/";
+      const logoFilename = klien.logo_klien.replace(baseUrl, '');
+
       const imagePath = path.join(
         __dirname,
         "../../public/assets/images/klien",
-        klien.logo_klien
+        logoFilename
       );
       fs.unlink(imagePath, (err) => {
         if (err) {
