@@ -10,6 +10,10 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       allowNull: false,
     },
+    nama_klien: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
     url_klien: {
       type: Sequelize.STRING,
       allowNull: false,
@@ -34,7 +38,6 @@ module.exports = (sequelize, Sequelize) => {
       as: "paket",
     });
   };
-
 
   return Klien;
 };

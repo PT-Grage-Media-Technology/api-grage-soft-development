@@ -11,7 +11,7 @@ const path = require("path");
 exports.create = [
   async (req, res) => {
     try {
-      const { kategori_klien_Id, paket_Id, is_headline } = req.body;
+      const { kategori_klien_Id, paket_Id, nama_klien, is_headline } = req.body;
       const kategoriKlien = await Kategori_klien.findByPk(kategori_klien_Id);
       const paket = await Paket.findByPk(paket_Id);
 
@@ -43,6 +43,7 @@ exports.create = [
       const klien = {
         kategori_klien_Id: kategoriKlien.id,
         paket_Id: paket.id,
+        nama_klien: nama_klien,
         logo_klien: imageName,
         url_klien: imageUrl,
         is_headline,
@@ -62,6 +63,7 @@ const serializer = new JSONAPISerializer("klien", {
   attributes: [
     "kategori_klien_Id",
     "paket_Id",
+    "nama_klien",
     "logo_klien",
     "url_klien",
     "is_headline",
@@ -82,7 +84,6 @@ const serializer = new JSONAPISerializer("klien", {
     ],
   },
 });
-
 
 exports.findAll = async (req, res) => {
   try {
@@ -161,6 +162,7 @@ exports.update = async (req, res) => {
     const updatedKlien = {
       kategoriId: kategoriKlien.id,
       paketId: paket.id,
+      nama_klien: req.body.nama_klien,
       foto: imageName,
       url: imageUrl,
       is_headline: req.body.is_headline,
