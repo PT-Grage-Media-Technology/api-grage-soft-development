@@ -3,14 +3,35 @@ const ContohDesain = db.contohDesain;
 
 exports.create = async (req, res) => {
   try {
+    const link_contoh_desain = req.body;
+    let contoh_desain;
+
+    const imageName = `${link_contoh_desain.filename}`;
+    const imageUrl = `${req.protocol}://${req.get("host")}/contoh_desain/${
+      link_contoh_desain.filename
+    }`;
+
+    if (req.file) {
+      // Jika ada file yang dikirim, gunakan file
+      contoh_desain = imageUrl;
+    } else if (req.body && req.body.link_contoh_desain) {
+      // Jika ada teks yang dikirim, gunakan teks
+      contoh_desain = req.body.link_contoh_desain;
+    } else {
+      // Jika tidak ada file atau teks, kembalikan error
+      return res
+        .status(400)
+        .send({ message: "Anda Tidak Ngirim File Atau Teks" });
+    }
+
     const contohDesain = await ContohDesain.create({
-      link_contoh_desain: req.body.link_contoh_desain,
+      link_contoh_desain: contoh_desain,
       is_gambar: req.body.is_gambar,
       deskripsi: req.body.deskripsi,
     });
     res.status(201).send(contohDesain);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send({message: "terjadi kesalahan", error});
   }
 };
 

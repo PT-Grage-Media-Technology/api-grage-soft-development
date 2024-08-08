@@ -1,13 +1,18 @@
 module.exports = (app) => {
-    const contohDesain = require("../controllers/contohDesainController");
-    const router = require("express").Router();
+  const contohDesain = require("../controllers/contohDesainController");
+  const router = require("express").Router();
+  const upl_contohDesain = require("../middleware/contohDesain");
 
-    router.post("/", contohDesain.create);
-    router.get("/", contohDesain.findAll);
-    router.get("/:id", contohDesain.findOne);
-    router.patch("/:id", contohDesain.update);
-    router.delete("/:id", contohDesain.delete);
-    router.delete("/", contohDesain.deleteAll);
+  router.post(
+    "/",
+    upl_contohDesain.single("link_contoh_desain"),
+    contohDesain.create
+  );
+  router.get("/", contohDesain.findAll);
+  router.get("/:id", contohDesain.findOne);
+  router.patch("/:id", contohDesain.update);
+  router.delete("/:id", contohDesain.delete);
+  router.delete("/", contohDesain.deleteAll);
 
-    app.use("/api/contohDesain", router);
-}
+  app.use("/api/contohDesain", router);
+};
