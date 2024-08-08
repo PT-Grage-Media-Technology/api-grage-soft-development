@@ -2,8 +2,6 @@ const express = require("express");
 const cors = require("cors");
 
 const app = express();
-app.use("/layanan", express.static("public/assets/images/layanan")); //masukkan public direktori
-app.use("/transaksi", express.static("public/assets/images/transaksi")); //masukkan public direktori
 app.use("/setting", express.static("public/assets/images/setting")); //masukkan public direktori
 app.use("/testimoni", express.static("public/assets/images/testimoni")); //masukkan public direktori
 app.use("/bank", express.static("public/assets/images/bank")); //masukkan public direktori
@@ -38,12 +36,9 @@ app.get("/", (req, res) => {
 });
 
 require("./app/routes/setting")(app);
-require("./app/routes/layanan")(app);
-require("./app/routes/transaksi")(app);
 require("./app/routes/testimoni")(app);
 require("./app/routes/administrators")(app);
 require("./app/routes/auth")(app);
-require("./app/routes/order")(app);
 require("./app/routes/kategoriKlien")(app);
 require("./app/routes/klien")(app);
 require("./app/routes/kategoriWebsite")(app);
