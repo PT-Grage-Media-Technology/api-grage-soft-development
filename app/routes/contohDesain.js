@@ -5,7 +5,7 @@ module.exports = (app) => {
 
   router.post(
     "/",
-    upl_contohDesain.single("link_contoh_desain"),
+    upl_contohDesain.single("gambar_link_contoh_desain"),
     contohDesain.create
   );
   router.get("/", contohDesain.findAll);

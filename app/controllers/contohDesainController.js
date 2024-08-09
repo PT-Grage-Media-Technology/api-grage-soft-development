@@ -1,20 +1,21 @@
 const db = require("../models");
 const ContohDesain = db.contohDesain;
+const fs = require("fs");
+
 
 exports.create = async (req, res) => {
   try {
-    const link_contoh_desain = req.body;
+    const gambar_link_contoh_desain = req.file;
     let contoh_desain;
-
-    const imageName = `${link_contoh_desain.filename}`;
-    const imageUrl = `${req.protocol}://${req.get("host")}/contoh_desain/${
-      link_contoh_desain.filename
-    }`;
-
+    
     if (req.file) {
       // Jika ada file yang dikirim, gunakan file
+      const imageUrl = `${req.protocol}://${req.get("host")}/contohDesain/${
+        gambar_link_contoh_desain.filename
+      }`;
+      
       contoh_desain = imageUrl;
-    } else if (req.body && req.body.link_contoh_desain) {
+    } else if (req.body && req.body.is_gambar == 0) {
       // Jika ada teks yang dikirim, gunakan teks
       contoh_desain = req.body.link_contoh_desain;
     } else {
@@ -29,6 +30,7 @@ exports.create = async (req, res) => {
       is_gambar: req.body.is_gambar,
       deskripsi: req.body.deskripsi,
     });
+
     res.status(201).send(contohDesain);
   } catch (error) {
     res.status(500).send({message: "terjadi kesalahan", error});
@@ -37,11 +39,37 @@ exports.create = async (req, res) => {
 
 exports.update = async (req, res) => {
   const id = req.params.id;
+  const gambar_link_contoh_desain = req.file;
+  let contoh_desain;
 
   try {
+    const contohdesain = await ContohDesain.findByPk(id);
+    if (!contohdesain) {
+      return res.status(404).send({ message: `Desain dengan id=${id} tidak ditemukan.` });
+    }
+
+    if (req.file) {
+      // Hapus foto lama
+      const oldImagePath = `public/assets/images/bank/${contohdesain.gambar_link_contoh_desain}`;
+      if (fs.existsSync(oldImagePath)) {
+        fs.unlinkSync(oldImagePath);
+      }
+
+      // Set new image URL
+      const imageUrl = `${req.protocol}://${req.get("host")}/contohDesain/${gambar_link_contoh_desain.filename}`;
+      contoh_desain = imageUrl;
+    } else if (req.body.is_gambar == 0 && req.body.link_contoh_desain) {
+      // Jika ada teks yang dikirim, gunakan teks
+      contoh_desain = req.body.link_contoh_desain;
+    } else {
+      // Jika tidak ada file atau teks, kembalikan error
+      return res.status(400).send({ message: "Anda Tidak Ngirim File Atau Teks" });
+    }
+
+    // Update the record
     const [updated] = await ContohDesain.update(
       {
-        link_contoh_desain: req.body.link_contoh_desain,
+        link_contoh_desain: contoh_desain,
         is_gambar: req.body.is_gambar,
         deskripsi: req.body.deskripsi,
       },
@@ -61,6 +89,7 @@ exports.update = async (req, res) => {
   } catch (error) {
     res.status(500).send({
       message: `Terjadi kesalahan saat memperbarui ContohDesain dengan id=${id}`,
+      error: error.message,
     });
   }
 };
@@ -99,25 +128,35 @@ exports.findOne = async (req, res) => {
 exports.delete = async (req, res) => {
   const id = req.params.id;
 
-  try {
-    const deleted = await ContohDesain.destroy({
-      where: { id: id },
-    });
+  ContohDesain.findByPk(id)
+    .then((data) => {
+      if (!data) {
+        return res
+          .status(500)
+          .send({ message: `Contoh desain dengan id=${id} tidak ditemukan.` });
+        }
+        
+      const baseUrl = "http://localhost:5000/contohDesain/";
+      const logoFilename = data.link_contoh_desain.replace(baseUrl, '');
+      const imagePath = `public/assets/images/contohDesain/${logoFilename}`;
+      fs.unlink(imagePath, (err) => {
+        if (err) {
+          console.error("Gagal menghapus foto:", err);
+        }
+      });
 
-    if (deleted) {
-      res.status(200).send({
-        message: `ContohDesain dengan id=${id} berhasil dihapus.`,
-      });
-    } else {
-      res.status(404).send({
-        message: `Tidak dapat menghapus ContohDesain dengan id=${id}. Mungkin ContohDesain tidak ditemukan!`,
-      });
-    }
-  } catch (error) {
-    res.status(500).send({
-      message: `Terjadi kesalahan saat menghapus ContohDesain dengan id=${id}`,
+      ContohDesain.destroy({ where: { id: id } })
+        .then(() => {
+          res.send({ message: "Contoh desain berhasil dihapus." });
+        })
+        .catch((error) => {
+          res.status(500).send({ message: error.message });
+        });
+    })
+    .catch((error) => {
+      res.status(500).send({ message: error.message });
     });
-  }
+  
 };
 
 exports.deleteAll = async (req, res) => {
