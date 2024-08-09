@@ -2,18 +2,20 @@ const db = require("../models");
 const ContohDesain = db.contohDesain;
 const fs = require("fs");
 
-
 exports.create = async (req, res) => {
+
+  
+  // return res.status(500).send({ message: req.body.is_gambar });
   try {
     const gambar_link_contoh_desain = req.file;
     let contoh_desain;
-    
+
     if (req.file) {
       // Jika ada file yang dikirim, gunakan file
       const imageUrl = `${req.protocol}://${req.get("host")}/contohDesain/${
         gambar_link_contoh_desain.filename
       }`;
-      
+
       contoh_desain = imageUrl;
     } else if (req.body && req.body.is_gambar == 0) {
       // Jika ada teks yang dikirim, gunakan teks
@@ -33,7 +35,7 @@ exports.create = async (req, res) => {
 
     res.status(201).send(contohDesain);
   } catch (error) {
-    res.status(500).send({message: "terjadi kesalahan", error});
+    res.status(500).send({ message: "terjadi kesalahan", error });
   }
 };
 
@@ -44,26 +46,40 @@ exports.update = async (req, res) => {
 
   try {
     const contohdesain = await ContohDesain.findByPk(id);
+
+    // return res.status(500).send({ message: req.body.is_gambar });
+
     if (!contohdesain) {
-      return res.status(404).send({ message: `Desain dengan id=${id} tidak ditemukan.` });
+      return res
+        .status(404)
+        .send({ message: `Desain dengan id=${id} tidak ditemukan.` });
     }
 
+    // Cek jika ada file yang dikirim
     if (req.file) {
-      // Hapus foto lama
-      const oldImagePath = `public/assets/images/bank/${contohdesain.gambar_link_contoh_desain}`;
-      if (fs.existsSync(oldImagePath)) {
-        fs.unlinkSync(oldImagePath);
+      // Hapus foto lama jika ada
+      if (contohdesain.link_contoh_desain) {
+        const oldImagePath = `public/assets/images/contohDesain/${contohdesain.link_contoh_desain}`;
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath);
+        }
       }
 
-      // Set new image URL
-      const imageUrl = `${req.protocol}://${req.get("host")}/contohDesain/${gambar_link_contoh_desain.filename}`;
+      // Set URL gambar baru
+      const imageUrl = `${req.protocol}://${req.get("host")}/contohDesain/${
+        gambar_link_contoh_desain.filename
+      }`;
       contoh_desain = imageUrl;
-    } else if (req.body.is_gambar == 0 && req.body.link_contoh_desain) {
-      // Jika ada teks yang dikirim, gunakan teks
+    }
+    // Cek jika `is_gambar` bernilai 0 dan ada link teks yang dikirim
+    else if (req.body.is_gambar === "0" && req.body.link_contoh_desain) {
       contoh_desain = req.body.link_contoh_desain;
-    } else {
-      // Jika tidak ada file atau teks, kembalikan error
-      return res.status(400).send({ message: "Anda Tidak Ngirim File Atau Teks" });
+    }
+    // Jika tidak ada file atau teks yang dikirim
+    else {
+      return res
+        .status(400)
+        .send({ message: "Anda Tidak Ngirim File Atau Teks" });
     }
 
     // Update the record
@@ -134,10 +150,10 @@ exports.delete = async (req, res) => {
         return res
           .status(500)
           .send({ message: `Contoh desain dengan id=${id} tidak ditemukan.` });
-        }
-        
+      }
+
       const baseUrl = "http://localhost:5000/contohDesain/";
-      const logoFilename = data.link_contoh_desain.replace(baseUrl, '');
+      const logoFilename = data.link_contoh_desain.replace(baseUrl, "");
       const imagePath = `public/assets/images/contohDesain/${logoFilename}`;
       fs.unlink(imagePath, (err) => {
         if (err) {
@@ -156,7 +172,6 @@ exports.delete = async (req, res) => {
     .catch((error) => {
       res.status(500).send({ message: error.message });
     });
-  
 };
 
 exports.deleteAll = async (req, res) => {

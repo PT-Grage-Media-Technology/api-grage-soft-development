@@ -10,7 +10,7 @@ module.exports = (app) => {
   );
   router.get("/", contohDesain.findAll);
   router.get("/:id", contohDesain.findOne);
-  router.patch("/:id", contohDesain.update);
+  router.patch("/:id", upl_contohDesain.single("gambar_link_contoh_desain"), contohDesain.update);
   router.delete("/:id", contohDesain.delete);
   router.delete("/", contohDesain.deleteAll);
 
