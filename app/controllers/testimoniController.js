@@ -26,6 +26,7 @@ exports.create = async (req, res) => {
       gambar_testimoni: imageName,
       judul_testimoni: req.body.judul_testimoni,
       deskripsi_testimoni: req.body.deskripsi_testimoni,
+      is_publish: req.body.is_publish,
       url_gambar: imageUrl,
     };
 
