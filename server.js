@@ -29,7 +29,6 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 
@@ -52,6 +51,7 @@ require("./app/routes/wcu")(app);
 require("./app/routes/benefitPaket")(app);
 require("./app/routes/contohDesain")(app);
 require("./app/routes/syaratketentuan")(app);
+require("./app/routes/backupdb")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 5000;
