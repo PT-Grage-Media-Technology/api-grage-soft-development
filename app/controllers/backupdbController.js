@@ -2,6 +2,8 @@ const mysqldump = require("mysqldump");
 const fs = require("fs");
 const path = require("path");
 const cron = require("node-cron");
+const dbConfig = require("../configs/database.js");
+
 
 exports.backup = [
   async (req, res) => {
@@ -10,10 +12,10 @@ exports.backup = [
 
       await mysqldump({
         connection: {
-          host: "localhost",
-          user: "root",
-          password: "",
-          database: "gmt_soft_development",
+          host: dbConfig.HOST,
+          user: dbConfig.USER,
+          password: dbConfig.PASSWORD,
+          database: dbConfig.DB,
         },
         dumpToFile: backupFilePath,
       });
