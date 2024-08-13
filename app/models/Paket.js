@@ -32,5 +32,12 @@ module.exports = (sequelize, Sequelize) => {
     });
   };
 
+  Paket.associate = (models) => {
+    Paket.hasMany(models.cart_paket, {
+      foreignKey: "id_paket",
+      as: "cartPaket",
+    });
+  };
+
   return Paket;
 };

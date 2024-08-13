@@ -3,6 +3,8 @@
 const dbConfig = require("../configs/database.js");
 
 const Sequelize = require("sequelize");
+const invoice = require("./invoice.js");
+const paket = require("./paket.js");
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   host: dbConfig.HOST,
   dialect: dbConfig.dialect,
@@ -38,7 +40,11 @@ db.bank = require("./Bank.js")(sequelize, Sequelize);
 db.benefitPaket = require("./benefitPaket.js")(sequelize, Sequelize);
 db.contohDesain = require("./contohDesain.js")(sequelize, Sequelize);
 db.syaratKetentuan = require("./SyaratKetentuan.js")(sequelize, Sequelize);
+db.pelanggan = require("./Pelanggan.js")(sequelize, Sequelize);
+db.invoice = require("./invoice.js")(sequelize, Sequelize);
 //db.backup = require("./backup.js")(sequelize, Sequelize);
+db.cart_paket = require("./cartPaket.js")(sequelize, Sequelize);
+
 
 // relasi table order ke layanan
 db.order.belongsTo(db.layanan, { foreignKey: "layananId" });
