@@ -4,7 +4,7 @@ const KategoriWebsite = db.kategoriwebsite;
 const JSONAPISerializer = require("jsonapi-serializer").Serializer;
 const serializer = new JSONAPISerializer("paket", {
   attributes: [
-    'nama_paket',
+    "nama_paket",
     "harga",
     "jumlah_pilihan_desain",
     "status_website",
@@ -68,11 +68,11 @@ exports.findAll = (req, res) => {
         message: err.message || "Terjadi kesalahan saat mengambil Paket.",
       });
     });
-  };
-  
-  // Find a single Paket with an id
-  exports.findOne = (req, res) => {
-    const id = req.params.id;
+};
+
+// Find a single Paket with an id
+exports.findOne = (req, res) => {
+  const id = req.params.id;
 
   // Paket.findByPk(id)
   Paket.findOne({

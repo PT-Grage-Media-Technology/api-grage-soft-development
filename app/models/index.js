@@ -45,6 +45,41 @@ db.invoice = require("./invoice.js")(sequelize, Sequelize);
 //db.backup = require("./backup.js")(sequelize, Sequelize);
 db.cart_paket = require("./cartPaket.js")(sequelize, Sequelize);
 
+// Invoice Model
+db.invoice.hasMany(db.cart_paket, {
+  foreignKey: "id_invoice",
+  as: "cart_pakets",
+});
+db.cart_paket.belongsTo(db.invoice, {
+  foreignKey: "id_invoice",
+  as: "invoices",
+});
+
+// Paket Model
+db.paket.hasMany(db.cart_paket, { foreignKey: "id_paket", as: "cart_pakets" });
+db.cart_paket.belongsTo(db.paket, { foreignKey: "id_paket", as: "pakets" });
+
+// Pelanggan Model
+db.pelanggan.hasMany(db.invoice, {
+  foreignKey: "pelanggan_id",
+  as: "Invoices",
+});
+db.invoice.belongsTo(db.pelanggan, {
+  foreignKey: "pelanggan_id",
+  as: "pelanggas",
+});
+
+// Paket Model
+db.paket.belongsTo(db.kategoriwebsite, {
+  foreignKey: "kategori_website_Id",
+  as: "kategoriWebsite",
+});
+
+// KategoriWebsite Model
+db.kategoriwebsite.hasMany(db.paket, {
+  foreignKey: "kategori_website_Id",
+  as: "Pakets",
+});
 
 // relasi table order ke layanan
 db.order.belongsTo(db.layanan, { foreignKey: "layananId" });

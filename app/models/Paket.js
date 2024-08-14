@@ -28,7 +28,7 @@ module.exports = (sequelize, Sequelize) => {
   Paket.associate = (models) => {
     Paket.belongsTo(models.kategoriwebsite, {
       foreignKey: "kategori_Website_Id",
-      as: "kategoriWebsite",
+      as: "kategoriWebsites",
     });
   };
 

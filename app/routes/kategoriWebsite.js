@@ -5,7 +5,7 @@ module.exports = (app) => {
   router.post("/", kategoriWebsite.create);
   router.get("/", kategoriWebsite.findAll);
   router.get("/:id", kategoriWebsite.findOne);
-  router.put("/:id", kategoriWebsite.update);
+  router.patch("/:id", kategoriWebsite.update);
   router.delete("/:id", kategoriWebsite.delete);
   app.use("/api/kategoriWebsite", router);
 };

@@ -52,6 +52,10 @@ require("./app/routes/benefitPaket")(app);
 require("./app/routes/contohDesain")(app);
 require("./app/routes/syaratketentuan")(app);
 require("./app/routes/backupdb")(app);
+require("./app/routes/cartPaket")(app);
+require("./app/routes/invoice")(app);
+require("./app/routes/pelanggan")(app);
+require("./app/routes/authPelanggan")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 5000;
