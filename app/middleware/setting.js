@@ -19,6 +19,17 @@ const storage = multer.diskStorage({
   },
 });
 
-const upl_setting = multer({ storage: storage });
+const fileFilter = (req, file, cb) => {
+  if (TYPE_IMAGE[file.mimetype]) {
+    cb(null, true);
+  } else {
+    cb(new Error("Invalid file type. Only image files are allowed."), false);
+  }
+};
+
+const upl_setting = multer({ 
+  storage: storage,
+  fileFilter: fileFilter
+});
 
 module.exports = upl_setting;

@@ -19,9 +19,7 @@ exports.create = async (req, res) => {
   }
 };
 
-const serializer = new JSONAPISerializer("kategori_klien", {
-  attributes: ["nama_kategori_klien"],
-});
+
 
 exports.findAll = async (req, res) => {
   try {

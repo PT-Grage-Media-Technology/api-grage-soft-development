@@ -10,18 +10,45 @@ const fs = require("fs");
 const path = require("path");
 // const Setting = require('../models/Setting'); // Sesuaikan dengan path model Anda
 
+// exports.create = async (req, res) => {
+//   try {
+//     const files = req.files;
+
+//     // Ambil path untuk setiap file yang di-upload
+//     const imagePaths = files.map((file) => ({
+//       imageName: file.filename,
+//       imageUrl: `${req.protocol}://${req.get("host")}/setting/${file.filename}`,
+//     }));
+
+//     // Tentukan file spesifik untuk setiap kebutuhan
+//     const [imageFile, fotoCapFile, fotoTtdFile] = imagePaths;
+
+//     const setting = {
+//       setting_warna: req.body.setting_warna,
+//       wa: req.body.wa,
+//       telp: req.body.telp,
+//       email: req.body.email,
+//       profil_perusahaan: req.body.profil_perusahaan,
+//       alamat: req.body.alamat,
+//       foto: imageFile.imageName,
+//       gambar_setting: imageFile.imageUrl,
+//       foto_cap: fotoCapFile ? fotoCapFile.imageName : null,
+//       url_foto_cap: imageFile.imageUrl,
+//       bidang_perusahaan: req.body.bidang_perusahaan,
+//       foto_ttd: fotoTtdFile ? fotoTtdFile.imageName : null,
+//       url_foto_ttd: imageFile.imageUrl,
+//     };
+
+//     const newSetting = await Setting.create(setting);
+//     res.status(201).send(newSetting);
+//   } catch (error) {
+//     res.status(500).send({ message: error.message });
+//   }
+// };
+
 exports.create = async (req, res) => {
   try {
-    const files = req.files;
-
-    // Ambil path untuk setiap file yang di-upload
-    const imagePaths = files.map((file) => ({
-      imageName: file.filename,
-      imageUrl: `${req.protocol}://${req.get("host")}/setting/${file.filename}`,
-    }));
-
-    // Tentukan file spesifik untuk setiap kebutuhan (ganti dengan logika yang sesuai)
-    const [imageFile, fotoCapFile, fotoTtdFile] = imagePaths;
+    const { foto, foto_cap, foto_ttd } = req.files;
 
     const setting = {
       setting_warna: req.body.setting_warna,
@@ -30,11 +57,19 @@ exports.create = async (req, res) => {
       email: req.body.email,
       profil_perusahaan: req.body.profil_perusahaan,
       alamat: req.body.alamat,
-      foto: imageFile.imageName,
-      gambar_setting: imageFile.imageUrl,
-      foto_cap: fotoCapFile ? fotoCapFile.imageName : null,
       bidang_perusahaan: req.body.bidang_perusahaan,
-      foto_ttd: fotoTtdFile ? fotoTtdFile.imageName : null,
+      foto: foto ? foto[0].filename : null,
+      gambar_setting: foto
+        ? `${req.protocol}://${req.get("host")}/setting/${foto[0].filename}`
+        : null,
+      foto_cap: foto_cap ? foto_cap[0].filename : null,
+      url_foto_cap: foto_cap
+        ? `${req.protocol}://${req.get("host")}/setting/${foto_cap[0].filename}`
+        : null,
+      foto_ttd: foto_ttd ? foto_ttd[0].filename : null,
+      url_foto_ttd: foto_ttd
+        ? `${req.protocol}://${req.get("host")}/setting/${foto_ttd[0].filename}`
+        : null,
     };
 
     const newSetting = await Setting.create(setting);
@@ -90,8 +125,7 @@ exports.findOne = (req, res) => {
   Setting.findByPk(id)
     .then((data) => {
       if (data) {
-        const serializedData = settingSerializer.serialize(data);
-        res.send(serializedData);
+        res.send(data);
       } else {
         res.status(404).send({
           message: `Cannot find tentang with id=${id}.`,
@@ -118,84 +152,61 @@ exports.update = async (req, res) => {
         .send({ message: `Setting dengan id=${id} tidak ditemukan.` });
     }
 
-    const files = req.files;
-    let imageName = setting.foto;
-    let imageUrl = setting.gambar_setting;
-    let imgCap = setting.foto_cap;
-    let capUrl = setting.foto_cap_url;
-    let imgTtd = setting.foto_tdd;
-    let tddUrl = setting.foto_tdd_url;
+    const { foto, foto_cap, foto_ttd } = req.files;
 
-    // Jika ada file baru yang diupload
-    if (files && files.length > 0) {
-      files.forEach((file) => {
-        const fileType = file.fieldname; // Nama field dari file yang di-upload
-
-        if (fileType === "foto") {
-          // Hapus foto lama
-          const oldImagePath = path.join(
-            __dirname,
-            `../../public/assets/images/setting/${setting.foto}`
-          );
-          fs.unlink(oldImagePath, (err) => {
-            if (err) {
-              console.error("Gagal menghapus foto lama:", err);
-            }
-          });
-
-          // Set foto baru
-          imageName = `${file.filename}`;
-          imageUrl = `${req.protocol}://${req.get("host")}/setting/${
-            file.filename
-          }`;
-        } else if (fileType === "foto_cap") {
-          // Hapus foto_cap lama
-          const oldCapPath = path.join(
-            __dirname,
-            `../../public/assets/images/setting/${setting.foto_cap}`
-          );
-          fs.unlink(oldCapPath, (err) => {
-            if (err) {
-              console.error("Gagal menghapus foto_cap lama:", err);
-            }
-          });
-
-          // Set foto_cap baru
-          imgCap = `${file.filename}`;
-          capUrl = `${req.protocol}://${req.get("host")}/setting/${
-            file.filename
-          }`;
-        } else if (fileType === "foto_ttd") {
-          // Hapus foto_tdd lama
-          const oldTddPath = path.join(
-            __dirname,
-            `../../public/assets/images/setting/${setting.foto_tdd}`
-          );
-          fs.unlink(oldTddPath, (err) => {
-            if (err) {
-              console.error("Gagal menghapus foto_tdd lama:", err);
-            }
-          });
-
-          // Set foto_tdd baru
-          imgTtd = `${file.filename}`;
-          tddUrl = `${req.protocol}://${req.get("host")}/setting/${
-            file.filename
-          }`;
-        }
-      });
-    }
-
-    const updatedSetting = {
-      ...req.body,
-      foto: imageName,
-      gambar_setting: imageUrl,
-      foto_cap: imgCap,
-      foto_tdd: imgTtd,
+    // Fungsi untuk menghapus file lama
+    const deleteOldFile = (oldFilename) => {
+      if (oldFilename) {
+        const oldFilePath = path.join(
+          __dirname,
+          `../../public/assets/images/setting/${oldFilename}`
+        );
+        fs.unlink(oldFilePath, (err) => {
+          if (err) console.error("Gagal menghapus file lama:", err);
+        });
+      }
     };
 
-    await Setting.update(updatedSetting, { where: { id: id } });
-    res.send({ message: "Setting berhasil diperbarui." });
+    // Update foto
+    if (foto) {
+      deleteOldFile(setting.foto);
+      setting.foto = foto[0].filename;
+      setting.gambar_setting = `${req.protocol}://${req.get("host")}/setting/${
+        foto[0].filename
+      }`;
+    }
+
+    // Update foto_cap
+    if (foto_cap) {
+      deleteOldFile(setting.foto_cap);
+      setting.foto_cap = foto_cap[0].filename;
+      setting.url_foto_cap = `${req.protocol}://${req.get("host")}/setting/${
+        foto_cap[0].filename
+      }`;
+    }
+
+    // Update foto_ttd
+    if (foto_ttd) {
+      deleteOldFile(setting.foto_ttd);
+      setting.foto_ttd = foto_ttd[0].filename;
+      setting.url_foto_ttd = `${req.protocol}://${req.get("host")}/setting/${
+        foto_ttd[0].filename
+      }`;
+    }
+
+    // Update field lainnya
+    setting.setting_warna = req.body.setting_warna || setting.setting_warna;
+    setting.wa = req.body.wa || setting.wa;
+    setting.telp = req.body.telp || setting.telp;
+    setting.email = req.body.email || setting.email;
+    setting.profil_perusahaan =
+      req.body.profil_perusahaan || setting.profil_perusahaan;
+    setting.alamat = req.body.alamat || setting.alamat;
+    setting.bidang_perusahaan =
+      req.body.bidang_perusahaan || setting.bidang_perusahaan;
+
+    await setting.save();
+    res.send({ message: "Setting berhasil diperbarui.", data: setting });
   } catch (error) {
     res.status(500).send({ message: error.message });
   }

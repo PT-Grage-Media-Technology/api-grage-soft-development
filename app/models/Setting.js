@@ -27,11 +27,17 @@ module.exports = (sequelize, Sequelize) => {
     foto_cap: {
       type: Sequelize.STRING,
     },
+    url_foto_cap: {
+      type: Sequelize.STRING,
+    },
     bidang_perusahaan: {
       type: Sequelize.STRING,
       allowNull: false,
     },
     foto_ttd: {
+      type: Sequelize.STRING,
+    },
+    url_foto_ttd: {
       type: Sequelize.STRING,
     },
   });
