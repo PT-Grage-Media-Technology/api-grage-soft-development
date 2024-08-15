@@ -24,8 +24,7 @@ exports.create = async (req, res) => {
 exports.findAll = async (req, res) => {
   try {
     const kategoriWebsites = await KategoriWebsite.findAll();
-    const serializedData = serializer.serialize(kategoriWebsites);
-    res.send(serializedData);
+    res.send(kategoriWebsites);
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
@@ -38,8 +37,7 @@ exports.findOne = (req, res) => {
   KategoriWebsite.findByPk(id)
     .then((kategoriWebsite) => {
       if (kategoriWebsite) {
-        const serializedData = serializer.serialize(kategoriWebsite);
-        res.send(serializedData);
+        res.send(kategoriWebsite);
       } else {
         res
           .status(404)
@@ -69,8 +67,7 @@ exports.update = (req, res) => {
     })
     .then((updatedKategoriWebsite) => {
       if (updatedKategoriWebsite) {
-        const serializedData = serializer.serialize(updatedKategoriWebsite);
-        res.send(serializedData);
+        res.send(updatedKategoriWebsite);
       }
     })
     .catch((error) => {

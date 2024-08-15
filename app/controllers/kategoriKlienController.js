@@ -26,10 +26,9 @@ const serializer = new JSONAPISerializer("kategori_klien", {
 exports.findAll = async (req, res) => {
   try {
     const kategoriKlien = await KategoriKlien.findAll();
-    const serializedData = serializer.serialize(kategoriKlien);
 
     res.status(200).send({
-      data: serializedData,
+      data: kategoriKlien,
     });
   } catch (error) {
     res.status(500).send({
@@ -43,9 +42,8 @@ exports.findOne = async (req, res) => {
   KategoriKlien.findByPk(id)
     .then((data) => {
       if (data) {
-        const serializedData = serializer.serialize(data);
         res.status(200).send({
-          data: serializedData,
+          data,
         });
       } else {
         res.status(404).send({

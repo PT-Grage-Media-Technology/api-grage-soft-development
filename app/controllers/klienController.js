@@ -11,7 +11,13 @@ const path = require("path");
 exports.create = [
   async (req, res) => {
     try {
-      const { kategori_klien_Id, paket_Id, nama_klien, is_headline, url_klien } = req.body;
+      const {
+        kategori_klien_Id,
+        paket_Id,
+        nama_klien,
+        is_headline,
+        url_klien,
+      } = req.body;
       const kategoriKlien = await Kategori_klien.findByPk(kategori_klien_Id);
       const paket = await Paket.findByPk(paket_Id);
 
@@ -24,8 +30,9 @@ exports.create = [
       }
 
       const imageName = `${foto.filename}`;
-      const imageUrl = `${req.protocol}://${req.get("host")}/klien/${foto.filename
-        }`;
+      const imageUrl = `${req.protocol}://${req.get("host")}/klien/${
+        foto.filename
+      }`;
 
       if (!kategoriKlien) {
         return res.status(500).send({
@@ -56,33 +63,7 @@ exports.create = [
       });
     }
   },
-]; 
-
-const serializer = new JSONAPISerializer("klien", {
-  attributes: [
-    "kategori_klien_Id",
-    "paket_Id",
-    "nama_klien",
-    "logo_klien",
-    "url_klien",
-    "is_headline",
-    "kategori_klien",
-    "paket",
-  ],
-  kategori_klien: {
-    ref: "id",
-    attributes: ["nama_kategori_klien"],
-  },
-  paket: {
-    ref: "id",
-    attributes: [
-      "harga",
-      "jumlah_pilihan_desain",
-      "status_website",
-      "kategori_website_id",
-    ],
-  },
-});
+];
 
 exports.findAll = async (req, res) => {
   try {
@@ -116,9 +97,8 @@ exports.findOne = (req, res) => {
   })
     .then((klien) => {
       if (klien) {
-        const serializedData = serializer.serialize(klien);
         res.status(200).send({
-          data: serializedData,
+          data: klien,
         });
       } else {
         res.status(404).send({
@@ -144,10 +124,10 @@ exports.update = async (req, res) => {
     const klien = await Klien.findByPk(id);
 
     let imageUrl;
-    
+
     if (file) {
       const baseUrl = "http://localhost:5000/klien/";
-      const logoFilename = klien.logo_klien.replace(baseUrl, '');
+      const logoFilename = klien.logo_klien.replace(baseUrl, "");
 
       const imagePath = path.join(
         __dirname,
@@ -191,7 +171,6 @@ exports.update = async (req, res) => {
       where: { id: id },
     });
 
-
     if (num == 1) {
       res.status(200).send({
         message: "Klien berhasil diperbarui.",
@@ -224,7 +203,7 @@ exports.delete = async (req, res) => {
 
     if (num == 1) {
       const baseUrl = "http://localhost:5000/klien/";
-      const logoFilename = klien.logo_klien.replace(baseUrl, '');
+      const logoFilename = klien.logo_klien.replace(baseUrl, "");
 
       const imagePath = path.join(
         __dirname,

@@ -26,13 +26,13 @@ module.exports = (sequelize, Sequelize) => {
   });
 
   Paket.associate = (models) => {
+    // Asosiasi dengan kategoriwebsite
     Paket.belongsTo(models.kategoriwebsite, {
       foreignKey: "kategori_Website_Id",
-      as: "kategoriWebsites",
+      as: "kategoriWebsite", // Alias ini harus unik
     });
-  };
-
-  Paket.associate = (models) => {
+ 
+    // Asosiasi dengan cart_paket
     Paket.hasMany(models.cart_paket, {
       foreignKey: "id_paket",
       as: "cartPaket",

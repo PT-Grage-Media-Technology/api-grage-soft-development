@@ -70,16 +70,22 @@ db.invoice.belongsTo(db.pelanggan, {
 });
 
 // Paket Model
-db.paket.belongsTo(db.kategoriwebsite, {
-  foreignKey: "kategori_website_Id",
-  as: "kategoriWebsite",
-});
+// db.paket.belongsTo(db.kategoriwebsite, {
+//   foreignKey: "kategori_website_Id",
+//   as: "kategoriWebsite",
+// });
 
 // KategoriWebsite Model
-db.kategoriwebsite.hasMany(db.paket, {
-  foreignKey: "kategori_website_Id",
-  as: "Pakets",
-});
+// db.kategoriwebsite.hasMany(db.paket, {
+//   foreignKey: "kategori_website_Id",
+//   as: "Pakets",
+// });
+
+// //Klien
+// db.klien.belongsTo(db.paket, {
+//   foreignKey: "paket_Id",
+//   as: "pakets",
+// });
 
 // relasi table order ke layanan
 db.order.belongsTo(db.layanan, { foreignKey: "layananId" });

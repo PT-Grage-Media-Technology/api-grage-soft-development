@@ -1,21 +1,6 @@
 const db = require("../models");
 const Paket = db.paket;
 const KategoriWebsite = db.kategoriwebsite;
-const JSONAPISerializer = require("jsonapi-serializer").Serializer;
-const serializer = new JSONAPISerializer("paket", {
-  attributes: [
-    "nama_paket",
-    "harga",
-    "jumlah_pilihan_desain",
-    "status_website",
-    "kategori_Website_Id",
-    "kategoriWebsite",
-  ],
-  kategoriWebsite: {
-    ref: "id",
-    attributes: ["nama_kategori", "deskripsi_kategori"],
-  },
-});
 
 // Create and Save a new Paket
 exports.create = async (req, res) => {
@@ -146,8 +131,7 @@ exports.update = async (req, res) => {
     })
     .then((data) => {
       if (data) {
-        const serializedData = serializer.serialize(data);
-        res.send(serializedData);
+        res.send(data);
       }
     })
     .catch((err) => {
