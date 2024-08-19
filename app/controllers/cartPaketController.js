@@ -4,17 +4,42 @@ const Invoice = db.invoice;
 const Paket = db.paket;
 
 // Create a new CartPaket
+// exports.create = async (req, res) => {
+//   try {
+//     const cartPaketData = {
+//       id_invoice: req.body.id_invoice,
+//       id_paket: req.body.id_paket,
+//       diskon: req.body.diskon,
+//       harga: req.body.harga,
+//     };
+
+//     const newCartPaket = await CartPaket.create(cartPaketData);
+//     res.status(201).send(newCartPaket);
+//   } catch (error) {
+//     res.status(500).send({ message: error.message });
+//   }
+// };
+
 exports.create = async (req, res) => {
   try {
-    const cartPaketData = {
-      id_invoice: req.body.id_invoice,
-      id_paket: req.body.id_paket,
-      diskon: req.body.diskon,
-      harga: req.body.harga,
-    };
+    // Pastikan req.body adalah array
+    if (!Array.isArray(req.body)) {
+      return res.status(400).send({ message: "Data harus berupa array." });
+    }
 
-    const newCartPaket = await CartPaket.create(cartPaketData);
-    res.status(201).send(newCartPaket);
+    const createdCartPakets = await Promise.all(
+      req.body.map(async (item) => {
+        const cartPaketData = {
+          id_invoice: item.id_invoice,
+          id_paket: item.id_paket,
+          diskon: item.diskon,
+          harga: item.harga,
+        };
+        return await CartPaket.create(cartPaketData);
+      })
+    );
+
+    res.status(201).send(createdCartPakets);
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
@@ -29,7 +54,7 @@ exports.findAll = async (req, res) => {
         { model: Paket, as: "pakets" },
       ],
     });
-    res.status(200).send(cartPakets);
+    res.status(200).send({ data: cartPakets });
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
