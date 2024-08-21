@@ -6,11 +6,11 @@ const { JWT_SECRET } = require("../configs/database"); // Mengimpor nilai JWT_SE
 
 exports.login = async (req, res) => {
   try {
-    const { nama, password } = req.body;
+    const { email, password } = req.body;
 
     // Cari administrator berdasarkan email
     const pelanggan = await Pelanggan.findOne({
-      where: { nama: nama },
+      where: { email: email },
     });
 
     // Jika administrator tidak ditemukan atau password salah, kirim respons error

@@ -46,14 +46,14 @@ db.invoice = require("./invoice.js")(sequelize, Sequelize);
 db.cart_paket = require("./cartPaket.js")(sequelize, Sequelize);
 
 // Invoice Model
-db.invoice.hasMany(db.cart_paket, {
-  foreignKey: "id_invoice",
-  as: "cart_pakets",
-});
-db.cart_paket.belongsTo(db.invoice, {
-  foreignKey: "id_invoice",
-  as: "invoices",
-});
+// db.invoice.hasMany(db.cart_paket, {
+//   foreignKey: "id_invoice",
+//   as: "cart_pakets",
+// });
+// db.cart_paket.belongsTo(db.invoice, {
+//   foreignKey: "id_invoice",
+//   as: "invoices",
+// });
 
 // Paket Model
 db.paket.hasMany(db.cart_paket, { foreignKey: "id_paket", as: "cart_pakets" });

@@ -9,5 +9,7 @@ module.exports = (app) => {
   router.delete("/:id", invoice.delete);
   router.delete("/", invoice.deleteAll);
 
+  router.get("/user/:userId", invoice.getInvoicesByUserId)
+
   app.use("/api/invoice", router);
 };

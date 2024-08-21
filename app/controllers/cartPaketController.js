@@ -2,6 +2,8 @@ const db = require("../models");
 const CartPaket = db.cart_paket;
 const Invoice = db.invoice;
 const Paket = db.paket;
+const Pelanggan = db.pelanggan;
+const KategoriWebsite = db.kategoriwebsite;
 
 // Create a new CartPaket
 // exports.create = async (req, res) => {
@@ -50,8 +52,22 @@ exports.findAll = async (req, res) => {
   try {
     const cartPakets = await CartPaket.findAll({
       include: [
-        { model: Invoice, as: "invoices" },
-        { model: Paket, as: "pakets" },
+        { model: Invoice, as: "invoices",
+          include: [
+            {
+              model: Pelanggan,
+              as: 'pelanggas',
+            },
+          ],
+        },
+        { model: Paket, as: "pakets", 
+          include: [
+            {
+              model: KategoriWebsite,
+              as: 'kategoriWebsite',
+            },
+          ],
+       },
       ],
     });
     res.status(200).send({ data: cartPakets });

@@ -1,6 +1,11 @@
+const { where } = require("sequelize");
 const db = require("../models");
+const cartPaket = db.cart_paket;
 const Invoice = db.invoice;
 const Pelanggan = db.pelanggan;
+const KategoriWebsite = db.kategoriwebsite;
+const Paket = db.paket;
+const CartPaket = db.cart_paket;
 
 // Create a new Invoice
 exports.create = async (req, res) => {
@@ -22,10 +27,72 @@ exports.create = async (req, res) => {
   }
 };
 
+exports.getInvoicesByUserId = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // Find all invoices for the user
+    const invoices = await Invoice.findAll({
+      where: { pelanggan_id: userId },
+      include: [
+        {
+          model: CartPaket,
+          as: "cartPaket", // Specify the alias here
+          include: [
+            {
+              model: Paket,
+              as: 'paket',
+              include: [
+                {
+                  model: KategoriWebsite,
+                  as: 'kategoriWebsite'
+                }
+              ],
+            },
+          ],
+        },
+      ],
+    });
+
+    if (invoices.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No invoices found for this user" });
+    }
+
+    // For simplicity, let's just return the first invoice's cart items
+    const firstInvoice = invoices[0];
+    res.status(200).send(invoices);
+
+    // res.json({
+    //   id: firstInvoice.id,
+    //   user_id: firstInvoice.user_id,
+    //   total: firstInvoice.total,
+    //   cartPaket: firstInvoice.CartPakets.map((item) => ({
+    //     id: item.id,
+    //     pakets: {
+    //       nama_paket: item.Paket.nama_paket,
+    //       kategoriWebsite: {
+    //         nama_kategori: item.Paket.KategoriWebsite.nama_kategori,
+    //       },
+    //     },
+    //     harga: item.harga,
+    //   })),
+    // });
+  } catch (error) {
+    console.error("Error fetching invoices:", error);
+    res
+      .status(500)
+      .json({ message: "Error fetching invoices", error: error.message });
+  }
+};
+
 // Retrieve all Invoices
 exports.findAll = async (req, res) => {
+  const { pelanggan_id } = req.query;
   try {
     const invoices = await Invoice.findAll({
+      where: { pelanggan_id },
       include: [{ model: Pelanggan, as: "pelanggas" }],
     });
     res.status(200).send(invoices);
@@ -39,7 +106,20 @@ exports.findOne = async (req, res) => {
   const id = req.params.id;
   try {
     const invoice = await Invoice.findByPk(id, {
-      include: [{ model: Pelanggan, as: "pelanggas" }],
+      include: [
+        { model: Pelanggan, as: "pelanggas" },
+        {
+          model: cartPaket,
+          as: "cartPaket",
+          include: [
+            {
+              model: Paket,
+              as: "pakets",
+              include: [{ model: KategoriWebsite, as: "kategoriWebsite" }],
+            },
+          ],
+        },
+      ],
     });
 
     if (!invoice) {
