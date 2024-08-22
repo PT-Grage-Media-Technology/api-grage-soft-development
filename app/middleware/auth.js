@@ -27,4 +27,17 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-module.exports = authMiddleware;
+const verifyToken = (req, res, next) => {
+  const token = req.headers["authorization"];
+  if (!token) return res.status(403).json({ message: "Token not provided" });
+
+  try {
+    const bearerToken = token.split(" ")[1];
+    const decoded = jwt.verify(bearerToken, process.env.JWT_SECRET);
+    req.pelangganId = decoded.id; // Simpan PelangganId ke req untuk digunakan di endpoint
+    next();
+  } catch (err) {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+};
+module.exports = authMiddleware, verifyToken;

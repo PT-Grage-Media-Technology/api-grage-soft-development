@@ -34,7 +34,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // simple route
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to Izin Aja application." });
+  res.json({ message: "Welcome to Gmt Soft Development application." });
 });
 
 require("./app/routes/setting")(app);

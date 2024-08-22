@@ -58,47 +58,60 @@ exports.logout = (req, res) => {
 };
 
 exports.cekToken = async (req, res) => {
-    try {
-      // Dapatkan token dari header Authorization
-      const token = req.header("Authorization");
-  
-      if (!token) {
-        return res.status(401).json({ message: "Missing token, logout failed" });
-      }
-  
-      // decode JWT untuk mendapatkan id dari pelanggan
-      decodeJWTAndGetID(token)
-        .then(async (id) => {
-          const pelanggan = await Pelanggan.findOne({
-            where: { id: id }
-          })
-  
-          res.json({ id: pelanggan.id })
-  
-        })
-        .catch((err) => {
-          res.status(500).json({ message: `Gagal mendeskripsi JWT:`, err })
-        })
-  
-  
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: `Internal server error ${error}` })
+  try {
+    // Dapatkan token dari header Authorization
+    const token = req.header("Authorization");
+
+    if (!token) {
+      return res.status(401).json({ message: "Missing token, logout failed" });
     }
-  };
-  
-  function decodeJWTAndGetID(token) {
-    return new Promise((resolve, reject) => {
-      jwt.verify(token, JWT_SECRET, (err, decoded) => {
-        if (err) {
-          reject(err);
-        }
-        else {
-          // mengambbil id dari payload JWT
-          const id = decoded.id;
-          resolve(id);
-        }
+
+    // decode JWT untuk mendapatkan id dari pelanggan
+    decodeJWTAndGetID(token)
+      .then(async (id) => {
+        const pelanggan = await Pelanggan.findOne({
+          where: { id: id },
+        });
+
+        res.json({ id: pelanggan.id });
       })
-    })
+      .catch((err) => {
+        res.status(500).json({ message: `Gagal mendeskripsi JWT:`, err });
+      });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: `Internal server error ${error}` });
   }
-  
+};
+
+function decodeJWTAndGetID(token) {
+  return new Promise((resolve, reject) => {
+    jwt.verify(token, JWT_SECRET, (err, decoded) => {
+      if (err) {
+        reject(err);
+      } else {
+        // mengambbil id dari payload JWT
+        const id = decoded.id;
+        resolve(id);
+      }
+    });
+  });
+}
+
+exports.me = async (req, res) => {
+  try {
+    // Ambil data user dari database berdasarkan pelangganId yang ada di req
+    const pelanggan = await Pelanggan.findByPk(req.pelangganId, {
+      attributes: ["id", "nama", "telp", "email"],
+    });
+
+    if (!pelanggan) {
+      return res.status(404).json({ message: "pelanggan not found" });
+    }
+
+    res.json(pelanggan);
+  } catch (error) {
+    console.error("Error fetching pelanggan data:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

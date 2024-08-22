@@ -41,12 +41,12 @@ exports.getInvoicesByUserId = async (req, res) => {
           include: [
             {
               model: Paket,
-              as: 'paket',
+              as: "paket",
               include: [
                 {
                   model: KategoriWebsite,
-                  as: 'kategoriWebsite'
-                }
+                  as: "kategoriWebsite",
+                },
               ],
             },
           ],
@@ -63,22 +63,6 @@ exports.getInvoicesByUserId = async (req, res) => {
     // For simplicity, let's just return the first invoice's cart items
     const firstInvoice = invoices[0];
     res.status(200).send(invoices);
-
-    // res.json({
-    //   id: firstInvoice.id,
-    //   user_id: firstInvoice.user_id,
-    //   total: firstInvoice.total,
-    //   cartPaket: firstInvoice.CartPakets.map((item) => ({
-    //     id: item.id,
-    //     pakets: {
-    //       nama_paket: item.Paket.nama_paket,
-    //       kategoriWebsite: {
-    //         nama_kategori: item.Paket.KategoriWebsite.nama_kategori,
-    //       },
-    //     },
-    //     harga: item.harga,
-    //   })),
-    // });
   } catch (error) {
     console.error("Error fetching invoices:", error);
     res
@@ -89,11 +73,27 @@ exports.getInvoicesByUserId = async (req, res) => {
 
 // Retrieve all Invoices
 exports.findAll = async (req, res) => {
-  const { pelanggan_id } = req.query;
+  // const { pelanggan_id } = req.query;
   try {
     const invoices = await Invoice.findAll({
-      where: { pelanggan_id },
-      include: [{ model: Pelanggan, as: "pelanggas" }],
+      include: [
+        {
+          model: CartPaket,
+          as: "cartPaket", // Specify the alias here
+          include: [
+            {
+              model: Paket,
+              as: "paket",
+              include: [
+                {
+                  model: KategoriWebsite,
+                  as: "kategoriWebsite",
+                },
+              ],
+            },
+          ],
+        },
+      ],
     });
     res.status(200).send(invoices);
   } catch (error) {
