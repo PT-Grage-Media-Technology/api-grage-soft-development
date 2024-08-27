@@ -6,6 +6,7 @@ const JSONAPISerializer = require("jsonapi-serializer").Serializer;
 const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
+const apiConfig = require("../configs/apiConfig");
 
 // Create and Save a new testimoni
 exports.create = async (req, res) => {
@@ -16,9 +17,7 @@ exports.create = async (req, res) => {
     const imageName = `${gambar_testimoni.filename}`;
 
     // Production URL
-    const imageUrl = `${req.protocol}://${req.get("host")}/testimoni/${
-      gambar_testimoni.filename
-    }`;
+    const imageUrl = `${apiConfig.BASE_URL}/testimoni/${gambar_testimoni.filename}`;
 
     // Create testimoni object with new attributes
     const testimoni = {
@@ -107,9 +106,7 @@ exports.update = async (req, res) => {
     // Jika ada file baru, hapus file lama
     if (file) {
       const imageName = file.filename;
-      const imageUrl = `${req.protocol}://${req.get(
-        "host"
-      )}/testimoni/${imageName}`;
+      const imageUrl = `${apiConfig.BASE_URL}/testimoni/${imageName}`;
 
       testimoniData = {
         ...testimoniData,

@@ -1,10 +1,9 @@
 const db = require("../models");
 const ContohDesain = db.contohDesain;
 const fs = require("fs");
+const apiConfig = require("../configs/apiConfig");
 
 exports.create = async (req, res) => {
-
-  
   // return res.status(500).send({ message: req.body.is_gambar });
   try {
     const gambar_link_contoh_desain = req.file;
@@ -12,7 +11,7 @@ exports.create = async (req, res) => {
 
     if (req.file) {
       // Jika ada file yang dikirim, gunakan file
-      const imageUrl = `${req.protocol}://${req.get("host")}/contohDesain/${
+      const imageUrl = `${apiConfig.BASE_URL}/contohDesain/${
         gambar_link_contoh_desain.filename
       }`;
 
@@ -66,7 +65,7 @@ exports.update = async (req, res) => {
       }
 
       // Set URL gambar baru
-      const imageUrl = `${req.protocol}://${req.get("host")}/contohDesain/${
+      const imageUrl = `${apiConfig.BASE_URL}/contohDesain/${
         gambar_link_contoh_desain.filename
       }`;
       contoh_desain = imageUrl;
@@ -152,8 +151,7 @@ exports.delete = async (req, res) => {
           .send({ message: `Contoh desain dengan id=${id} tidak ditemukan.` });
       }
 
-      const baseUrl = "http://localhost:5000/contohDesain/";
-      const logoFilename = data.link_contoh_desain.replace(baseUrl, "");
+      const logoFilename = data.link_contoh_desain.replace(apiConfig.BASE_URL, "");
       const imagePath = `public/assets/images/contohDesain/${logoFilename}`;
       fs.unlink(imagePath, (err) => {
         if (err) {

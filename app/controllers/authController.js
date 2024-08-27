@@ -27,7 +27,7 @@ exports.login = async (req, res) => {
       expiresIn: "1h",
     });
 
-// Kirim token sebagai respons
+    // Kirim token sebagai respons
     res.json({ token });
   } catch (error) {
     console.error(error);
@@ -60,8 +60,6 @@ exports.logout = (req, res) => {
   }
 };
 
-
-
 exports.cekToken = async (req, res) => {
   try {
     // Dapatkan token dari header Authorization
@@ -75,20 +73,17 @@ exports.cekToken = async (req, res) => {
     decodeJWTAndGetID(token)
       .then(async (id) => {
         const administrator = await Administrators.findOne({
-          where: { id: id }
-        })
+          where: { id: id },
+        });
 
-        res.json({ role: administrator.role })
-
+        res.json({ role: administrator.role });
       })
       .catch((err) => {
-        res.status(500).json({ message: `Gagal mendeskripsi JWT:`, err })
-      })
-
-
+        res.status(500).json({ message: `Gagal mendeskripsi JWT:`, err });
+      });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: `Internal server error ${error}` })
+    res.status(500).json({ message: `Internal server error ${error}` });
   }
 };
 
@@ -97,13 +92,11 @@ function decodeJWTAndGetID(token) {
     jwt.verify(token, JWT_SECRET, (err, decoded) => {
       if (err) {
         reject(err);
-      }
-      else {
+      } else {
         // mengambbil id dari payload JWT
         const id = decoded.id;
         resolve(id);
       }
-    })
-  })
+    });
+  });
 }
-

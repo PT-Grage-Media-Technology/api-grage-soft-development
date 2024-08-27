@@ -2,11 +2,9 @@ const db = require("../models");
 const Klien = db.klien;
 const Kategori_klien = db.kategori_klien;
 const Paket = db.paket;
-const JSONAPISerializer = require("jsonapi-serializer").Serializer;
-const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
 const fs = require("fs");
 const path = require("path");
+const apiConfig = require("../configs/apiConfig");
 
 exports.create = [
   async (req, res) => {
@@ -30,7 +28,7 @@ exports.create = [
       }
 
       const imageName = `${foto.filename}`;
-      const imageUrl = `${req.protocol}://${req.get("host")}/klien/${
+      const imageUrl = `${apiConfig.BASE_URL}/klien/${
         foto.filename
       }`;
 
@@ -126,8 +124,7 @@ exports.update = async (req, res) => {
     let imageUrl;
 
     if (file) {
-      const baseUrl = "http://localhost:5000/klien/";
-      const logoFilename = klien.logo_klien.replace(baseUrl, "");
+      const logoFilename = klien.logo_klien.replace(apiConfig.BASE_URL, "");
 
       const imagePath = path.join(
         __dirname,
@@ -141,7 +138,7 @@ exports.update = async (req, res) => {
         }
       });
 
-      imageUrl = `${req.protocol}://${req.get("host")}/klien/${file.filename}`;
+      imageUrl = `${apiConfig.BASE_URL}/klien/${file.filename}`;
     } else {
       imageUrl = klien.logo_klien;
     }

@@ -1,16 +1,7 @@
 const db = require("../models");
 const Bank = db.bank;
 const fs = require("fs");
-const JSONAPISerializer = require("jsonapi-serializer").Serializer;
-const serializer = new JSONAPISerializer("bank", {
-  attributes: [
-    "nama_rek",
-    "no_rek",
-    "image_bank",
-    "url_image_bank",
-    "atas_nama",
-  ],
-});
+const apiConfig = require("../configs/apiConfig");
 
 exports.create = [
   async (req, res) => {
@@ -23,7 +14,7 @@ exports.create = [
           .send({ message: "Image Bank tidak boleh kosong" });
       }
       const imageName = `${image_bank.filename}`;
-      const imageUrl = `${req.protocol}://${req.get("host")}/bank/${
+      const imageUrl = `${apiConfig.BASE_URL}/bank/${
         image_bank.filename
       }`;
 
@@ -68,7 +59,7 @@ exports.update = async (req, res) => {
 
       // Set foto baru
       imageName = `${image_bank.filename}`;
-      imageUrl = `${req.protocol}://${req.get("host")}/bank/${
+      imageUrl = `${apiConfig.BASE_URL}/bank/${
         image_bank.filename
       }`;
     }
@@ -91,7 +82,7 @@ exports.update = async (req, res) => {
 exports.findAll = (req, res) => {
   Bank.findAll()
     .then((data) => {
-      res.status(200).send({data: data});
+      res.status(200).send({ data: data });
     })
     .catch((error) => {
       res.status(500).send({ message: error.message });

@@ -1,22 +1,7 @@
 const db = require("../models");
 const BenefitPaket = db.benefitPaket;
 const Paket = db.paket;
-const JSONAPISerializer = require("jsonapi-serializer").Serializer;
-const fs = require("fs");
-const path = require("path");
 
-const serializer = new JSONAPISerializer("benefitPaket", {
-  attributes: ["nama_benefit", "paket_id", "paket"],
-  paket: {
-    ref: "id",
-    attributes: [
-      "harga",
-      "jumlah_pilihan_desain",
-      "status_website",
-      "kategori_website_id",
-    ],
-  },
-});
 
 exports.create = async (req, res) => {
   try {

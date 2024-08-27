@@ -1,13 +1,9 @@
 const db = require("../models");
-
 const Setting = db.setting;
-const Op = db.Sequelize.Op;
-const JSONAPISerializer = require("jsonapi-serializer").Serializer;
-
-const multer = require("multer");
-
 const fs = require("fs");
 const path = require("path");
+const apiConfig = require("../configs/apiConfig");
+
 // const Setting = require('../models/Setting'); // Sesuaikan dengan path model Anda
 
 // exports.create = async (req, res) => {
@@ -60,15 +56,15 @@ exports.create = async (req, res) => {
       bidang_perusahaan: req.body.bidang_perusahaan,
       foto: foto ? foto[0].filename : null,
       gambar_setting: foto
-        ? `${req.protocol}://${req.get("host")}/setting/${foto[0].filename}`
+        ? `${apiConfig.BASE_URL}/setting/${foto[0].filename}`
         : null,
       foto_cap: foto_cap ? foto_cap[0].filename : null,
       url_foto_cap: foto_cap
-        ? `${req.protocol}://${req.get("host")}/setting/${foto_cap[0].filename}`
+        ? `${apiConfig.BASE_URL}/setting/${foto_cap[0].filename}`
         : null,
       foto_ttd: foto_ttd ? foto_ttd[0].filename : null,
       url_foto_ttd: foto_ttd
-        ? `${req.protocol}://${req.get("host")}/setting/${foto_ttd[0].filename}`
+        ? `${apiConfig.BASE_URL}/setting/${foto_ttd[0].filename}`
         : null,
     };
 
@@ -171,7 +167,7 @@ exports.update = async (req, res) => {
     if (foto) {
       deleteOldFile(setting.foto);
       setting.foto = foto[0].filename;
-      setting.gambar_setting = `${req.protocol}://${req.get("host")}/setting/${
+      setting.gambar_setting = `${apiConfig.BASE_URL}/setting/${
         foto[0].filename
       }`;
     }
@@ -180,7 +176,7 @@ exports.update = async (req, res) => {
     if (foto_cap) {
       deleteOldFile(setting.foto_cap);
       setting.foto_cap = foto_cap[0].filename;
-      setting.url_foto_cap = `${req.protocol}://${req.get("host")}/setting/${
+      setting.url_foto_cap = `${apiConfig.BASE_URL}/setting/${
         foto_cap[0].filename
       }`;
     }
@@ -189,7 +185,7 @@ exports.update = async (req, res) => {
     if (foto_ttd) {
       deleteOldFile(setting.foto_ttd);
       setting.foto_ttd = foto_ttd[0].filename;
-      setting.url_foto_ttd = `${req.protocol}://${req.get("host")}/setting/${
+      setting.url_foto_ttd = `${apiConfig.BASE_URL}/setting/${
         foto_ttd[0].filename
       }`;
     }
@@ -285,17 +281,3 @@ exports.deleteAll = (req, res) => {
       });
     });
 };
-
-// Find all filter Tentangs (phone)
-// exports.findAllPublished = (req, res) => {
-//     Tentang.findAll({ where: { phone: true } })
-//       .then(data => {
-//         res.send(data);
-//       })
-//       .catch(err => {
-//         res.status(500).send({
-//           message:
-//             err.message || "Some error occurred while retrieving Tentangs."
-//         });
-//       });
-//   };
