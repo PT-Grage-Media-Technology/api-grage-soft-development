@@ -14,7 +14,7 @@ const authMiddleware = (req, res, next) => {
 
   try {
     // Verifikasi token
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Tambahkan user ke request untuk digunakan di endpoint terproteksi
     req.user = decoded;

@@ -2,7 +2,7 @@ module.exports = (app) => {
   const express = require("express");
   const router = express.Router();
   const auth = require("../controllers/authPelangganController");
-  const verifyToken = require("../middleware/auth");
+  const verifyToken = require("../middleware/authPelanggan");
 
   router.post("/login", auth.login);
   router.post("/logout", auth.logout);

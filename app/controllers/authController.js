@@ -68,13 +68,14 @@ exports.cekToken = async (req, res) => {
     if (!token) {
       return res.status(401).json({ message: "Missing token, logout failed" });
     }
-
+    
+    
     // decode JWT untuk mendapatkan id dari user
     decodeJWTAndGetID(token)
-      .then(async (id) => {
-        const administrator = await Administrators.findOne({
-          where: { id: id },
-        });
+    .then(async (id) => {
+      const administrator = await Administrators.findOne({
+        where: { id: id },
+      });
 
         res.json({ role: administrator.role });
       })

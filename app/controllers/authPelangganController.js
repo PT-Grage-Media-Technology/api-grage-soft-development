@@ -21,7 +21,7 @@ exports.login = async (req, res) => {
     // Buat token JWT
     const token = jwt.sign({ id: pelanggan.id }, JWT_SECRET, {
       // Menggunakan JWT_SECRET sebagai kunci rahasia
-      expiresIn: "1h",
+      expiresIn: "7d",
     });
 
     // Kirim token sebagai respons
@@ -73,6 +73,8 @@ exports.cekToken = async (req, res) => {
           where: { id: id },
         });
 
+        // return res.status(500).json({ message: pelanggan });
+
         res.json({ id: pelanggan.id });
       })
       .catch((err) => {
@@ -100,18 +102,28 @@ function decodeJWTAndGetID(token) {
 
 exports.me = async (req, res) => {
   try {
-    // Ambil data user dari database berdasarkan pelangganId yang ada di req
-    const pelanggan = await Pelanggan.findByPk(req.pelangganId, {
+    // Check if user information is available in the request
+    if (!req.user || !req.user.id) {
+      return res
+        .status(401)
+        .json({ message: "Unauthorized: User information not found" });
+    }
+
+    const pelanggan = await Pelanggan.findByPk(req.user.id, {
       attributes: ["id", "nama", "telp", "email"],
     });
 
     if (!pelanggan) {
-      return res.status(404).json({ message: "pelanggan not found" });
+      return res.status(404).json({ message: "Pelanggan not found" });
     }
 
     res.json(pelanggan);
   } catch (error) {
     console.error("Error fetching pelanggan data:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({
+      message: "Server error",
+      error: error.message,
+      stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
+    });
   }
 };
