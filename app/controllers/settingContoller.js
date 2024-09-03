@@ -4,44 +4,6 @@ const fs = require("fs");
 const path = require("path");
 const apiConfig = require("../configs/apiConfig");
 
-// const Setting = require('../models/Setting'); // Sesuaikan dengan path model Anda
-
-// exports.create = async (req, res) => {
-//   try {
-//     const files = req.files;
-
-//     // Ambil path untuk setiap file yang di-upload
-//     const imagePaths = files.map((file) => ({
-//       imageName: file.filename,
-//       imageUrl: `${req.protocol}://${req.get("host")}/setting/${file.filename}`,
-//     }));
-
-//     // Tentukan file spesifik untuk setiap kebutuhan
-//     const [imageFile, fotoCapFile, fotoTtdFile] = imagePaths;
-
-//     const setting = {
-//       setting_warna: req.body.setting_warna,
-//       wa: req.body.wa,
-//       telp: req.body.telp,
-//       email: req.body.email,
-//       profil_perusahaan: req.body.profil_perusahaan,
-//       alamat: req.body.alamat,
-//       foto: imageFile.imageName,
-//       gambar_setting: imageFile.imageUrl,
-//       foto_cap: fotoCapFile ? fotoCapFile.imageName : null,
-//       url_foto_cap: imageFile.imageUrl,
-//       bidang_perusahaan: req.body.bidang_perusahaan,
-//       foto_ttd: fotoTtdFile ? fotoTtdFile.imageName : null,
-//       url_foto_ttd: imageFile.imageUrl,
-//     };
-
-//     const newSetting = await Setting.create(setting);
-//     res.status(201).send(newSetting);
-//   } catch (error) {
-//     res.status(500).send({ message: error.message });
-//   }
-// };
-
 exports.create = async (req, res) => {
   try {
     const { foto, foto_cap, foto_ttd } = req.files;
@@ -53,6 +15,7 @@ exports.create = async (req, res) => {
       email: req.body.email,
       profil_perusahaan: req.body.profil_perusahaan,
       alamat: req.body.alamat,
+      url_gmaps: req.body.url_gmaps,
       bidang_perusahaan: req.body.bidang_perusahaan,
       foto: foto ? foto[0].filename : null,
       gambar_setting: foto
@@ -167,27 +130,21 @@ exports.update = async (req, res) => {
     if (foto) {
       deleteOldFile(setting.foto);
       setting.foto = foto[0].filename;
-      setting.gambar_setting = `${apiConfig.BASE_URL}/setting/${
-        foto[0].filename
-      }`;
+      setting.gambar_setting = `${apiConfig.BASE_URL}/setting/${foto[0].filename}`;
     }
 
     // Update foto_cap
     if (foto_cap) {
       deleteOldFile(setting.foto_cap);
       setting.foto_cap = foto_cap[0].filename;
-      setting.url_foto_cap = `${apiConfig.BASE_URL}/setting/${
-        foto_cap[0].filename
-      }`;
+      setting.url_foto_cap = `${apiConfig.BASE_URL}/setting/${foto_cap[0].filename}`;
     }
 
     // Update foto_ttd
     if (foto_ttd) {
       deleteOldFile(setting.foto_ttd);
       setting.foto_ttd = foto_ttd[0].filename;
-      setting.url_foto_ttd = `${apiConfig.BASE_URL}/setting/${
-        foto_ttd[0].filename
-      }`;
+      setting.url_foto_ttd = `${apiConfig.BASE_URL}/setting/${foto_ttd[0].filename}`;
     }
 
     // Update field lainnya
@@ -198,6 +155,7 @@ exports.update = async (req, res) => {
     setting.profil_perusahaan =
       req.body.profil_perusahaan || setting.profil_perusahaan;
     setting.alamat = req.body.alamat || setting.alamat;
+    setting.url_gmaps = req.body.url_gmaps || setting.url_gmaps;
     setting.bidang_perusahaan =
       req.body.bidang_perusahaan || setting.bidang_perusahaan;
 

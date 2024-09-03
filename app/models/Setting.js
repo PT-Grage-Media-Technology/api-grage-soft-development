@@ -18,6 +18,9 @@ module.exports = (sequelize, Sequelize) => {
     alamat: {
       type: Sequelize.TEXT,
     },
+    url_gmaps: {
+      type: Sequelize.TEXT,
+    },
     foto: {
       type: Sequelize.STRING,
     },
