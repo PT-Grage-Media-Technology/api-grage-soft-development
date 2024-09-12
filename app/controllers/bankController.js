@@ -27,7 +27,7 @@ exports.create = [
       };
 
       await Bank.create(bank);
-      res.status(201).send(serializer.serialize(bank));
+      res.status(201).send(bank);
     } catch (error) {
       res.status(500).send({ message: error.message });
     }
