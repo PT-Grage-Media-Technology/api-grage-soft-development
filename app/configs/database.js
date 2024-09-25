@@ -1,8 +1,8 @@
 module.exports = {
-  HOST: "localhost",
-  USER: "root",
-  PASSWORD: "",
-  DB: "gmt_soft_development",
+  HOST: "153.92.15.8",
+  USER: "u610515881_grage",
+  PASSWORD: "GrageWeb@1",
+  DB: "u610515881_grage",
   dialect: "mysql",
   pool: {
     max: 5,
