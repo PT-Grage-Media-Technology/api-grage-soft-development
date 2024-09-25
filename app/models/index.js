@@ -4,7 +4,7 @@ const dbConfig = require("../configs/database.js");
 
 const Sequelize = require("sequelize");
 const invoice = require("./invoice.js");
-const paket = require("./paket.js");
+const paket = require("./Paket.js");
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   host: dbConfig.HOST,
   dialect: dbConfig.dialect,
@@ -31,7 +31,7 @@ db.testimoni = require("./Testimoni.js")(sequelize, Sequelize);
 db.administrators = require("./Administrators.js")(sequelize, Sequelize);
 db.order = require("./Order.js")(sequelize, Sequelize);
 db.klien = require("./klien.js")(sequelize, Sequelize);
-db.paket = require("./paket.js")(sequelize, Sequelize);
+db.paket = require("./Paket.js")(sequelize, Sequelize);
 db.kategoriwebsite = require("./kategoriwebsite.js")(sequelize, Sequelize);
 db.kategori_klien = require("./KategoriKlien.js")(sequelize, Sequelize);
 db.keterangan = require("./Keterangan.js")(sequelize, Sequelize);
